@@ -3,58 +3,413 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="Comic-Adventure-Spiel mit einer kurzen, narrativen Story-Engine.">
   <title>Comic-Plot-Engine · Test mit XIII</title>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    :root{--bg:#cfe8ef;--ink:#1b1a2e;--card:#fffdf4;--acc:#e4412f;--sun:#ffd23f;--sea:#1f6f78;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-    *{box-sizing:border-box}
-    html,body{margin:0}
-    body{background:var(--bg);color:var(--ink);font:400 17px/1.45 "Comic Neue","Comic Sans MS",sans-serif;min-height:100vh;display:grid;place-items:center}
-    h1,h2,.spot,.fx,.por b{font-family:Bangers,Impact,sans-serif;letter-spacing:.04em;font-weight:400}
-    .wrap{max-width:920px;margin:0 auto;padding:12px;width:min(920px,calc(100vw - 20px))}
-    .top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
-    h1{font-size:clamp(28px,4vw,40px);margin:0}
-    .btn,.ch{font:700 16px "Comic Neue","Comic Sans MS",sans-serif;color:var(--ink);background:var(--card);border:3px solid var(--ink);border-radius:8px;padding:8px 12px;box-shadow:3px 3px 0 var(--ink);cursor:pointer}
-    .btn:hover,.ch:hover{background:var(--sun);color:#1b1a2e}
-    .btn:focus-visible,.ch:focus-visible,.spot:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
-    .stage{position:relative;aspect-ratio:16/9;border:4px solid var(--ink);box-shadow:6px 6px 0 var(--ink);background:var(--sea) center/cover no-repeat;overflow:hidden}
-    .stage::before{content:"";position:absolute;inset:0;background:rgba(0,0,0,.08);pointer-events:none}
-    .miss{position:absolute;left:12px;top:10px;font-size:13px;color:#fff;background:rgba(0,0,0,.45);padding:2px 8px;border-radius:6px;z-index:2}
-    .spot{position:absolute;transform:translate(-50%,-50%);font-size:20px;background:var(--sun);color:#1b1a2e;border:3px solid #1b1a2e;border-radius:6px;padding:4px 10px;cursor:pointer;box-shadow:3px 3px 0 #1b1a2e;z-index:3}
-    .spot:hover{background:var(--acc);color:#fff}
-    .chars{position:absolute;left:8px;bottom:8px;display:flex;gap:8px;z-index:2}
-    .por{width:84px;aspect-ratio:3/4;border:3px solid #1b1a2e;background:var(--card);position:relative;overflow:hidden;display:grid;place-items:center;font:400 34px Bangers,Impact,sans-serif;color:#1b1a2e}
-    .por.on{opacity:1;outline:4px solid var(--sun);transform:translateY(-6px)}
-    .por b{position:absolute;left:0;right:0;bottom:0;background:#1b1a2e;color:#fff;font-size:11px;text-align:center;padding:1px 2px;line-height:1.2}
-    .fx{position:absolute;left:50%;top:40%;font-size:clamp(44px,12vw,92px);color:var(--sun);-webkit-text-stroke:3px #1b1a2e;text-shadow:5px 5px 0 var(--acc);transform:translate(-50%,-50%) rotate(-8deg);animation:pop .9s ease both;z-index:4;pointer-events:none}
-    @keyframes pop{0%{transform:translate(-50%,-50%) scale(.3) rotate(-8deg);opacity:0}30%{opacity:1;transform:translate(-50%,-50%) scale(1.15) rotate(-8deg)}100%{transform:translate(-50%,-50%) scale(1) rotate(-8deg);opacity:1}}
-    .cap{margin-top:14px;background:var(--sun);color:#1b1a2e;border:3px solid #1b1a2e;padding:8px 12px;max-width:70ch}
-    .bubble{position:relative;margin-top:22px;background:#fff;color:#1b1a2e;border:3px solid #1b1a2e;border-radius:20px;padding:10px 16px;max-width:70ch}
-    .bubble::after{content:"";position:absolute;top:-17px;left:34px;border:10px solid transparent;border-top:0;border-bottom:16px solid #1b1a2e}
-    .bubble p{margin:2px 0 0}
-    .msg{margin-top:10px;font-weight:700;color:var(--acc);min-height:28px}
-    .chs{display:grid;gap:8px;margin-top:14px;max-width:70ch}
-    .ch{text-align:left}
-    .tag{font-style:normal;color:#fff;border-radius:5px;padding:1px 7px;margin-right:6px;font-size:14px}
-    .chs small{opacity:.75}
-    .bar{height:14px;border:3px solid var(--ink);background:var(--card);margin:6px 0;max-width:300px}
-    .bar i{display:block;height:100%;background:var(--acc)}
-    .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-    .st{margin-top:16px;font-size:15px}
-    .box{margin:30px auto;max-width:420px;text-align:center}
-    .ov{position:fixed;inset:0;background:rgba(0,0,0,.55);display:grid;place-items:center;padding:12px;z-index:9}
-    .ov:empty{display:none}
-    .pn{background:var(--card);border:4px solid var(--ink);padding:14px;max-width:560px;width:100%;max-height:100%;overflow:auto}
-    .im{border-top:2px dashed var(--ink);padding:8px 0}
-    .im textarea{width:100%;font:14px/1.3 "Comic Neue",sans-serif;background:var(--bg);color:var(--ink);border:2px solid var(--ink);margin:4px 0}
-    .fight-hud{position:absolute;left:10px;top:10px;z-index:6;display:flex;align-items:flex-end;gap:12px}
-    .hud-box{display:flex;flex-direction:column;gap:4px;font:700 12px "Comic Neue",sans-serif}
-    .hud-box .bar{width:170px;max-width:170px}
-    .hud-box .bar i{background:#2a9d5c}
-    .hud-box.me .bar i{background:var(--acc)}
-    .fight-controls{position:absolute;right:12px;bottom:12px;z-index:6;display:flex;gap:8px;flex-wrap:wrap}
-    .sr-only{position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap;border:0;padding:0;margin:-1px}
+    :root {
+      --bg: #cfe8ef;
+      --ink: #1b1a2e;
+      --card: #fffdf4;
+      --acc: #e4412f;
+      --sun: #ffd23f;
+      --sea: #1f6f78;
+      --grass: #2a9d5c;
+      --panel: rgba(255, 255, 255, 0.9);
+      --shadow: rgba(27, 26, 46, 0.18);
+      --focus: #ff8b3d;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      box-sizing: border-box;
+      color-scheme: light;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font: 400 17px/1.45 "Comic Neue", "Comic Sans MS", sans-serif;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: calc(12px + var(--safe-top)) 12px calc(12px + var(--safe-bottom));
+    }
+
+    h1, h2, .spot, .fx, .por b, .stat-label {
+      font-family: Bangers, Impact, sans-serif;
+      letter-spacing: .04em;
+      font-weight: 400;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .wrap {
+      width: min(920px, 100%);
+      margin: 0 auto;
+    }
+
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      font-size: clamp(28px, 4vw, 40px);
+      margin: 0;
+      line-height: 1;
+    }
+
+    .btn,
+    .ch {
+      font: 700 16px "Comic Neue", "Comic Sans MS", sans-serif;
+      color: var(--ink);
+      background: var(--card);
+      border: 3px solid var(--ink);
+      border-radius: 10px;
+      padding: 8px 12px;
+      box-shadow: 3px 3px 0 var(--ink);
+      cursor: pointer;
+      transition: transform .08s ease, box-shadow .08s ease, background .12s ease;
+    }
+
+    .btn:hover,
+    .ch:hover,
+    .spot:hover {
+      transform: translate(-1px, -1px);
+      box-shadow: 4px 4px 0 var(--ink);
+      background: var(--sun);
+      color: #1b1a2e;
+    }
+
+    .btn:active,
+    .ch:active,
+    .spot:active {
+      transform: translate(2px, 2px);
+      box-shadow: 1px 1px 0 var(--ink);
+    }
+
+    .btn:focus-visible,
+    .ch:focus-visible,
+    .spot:focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 2px;
+    }
+
+    .stage {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      border: 4px solid var(--ink);
+      box-shadow: 6px 6px 0 var(--ink), 0 0 0 4px rgba(255,255,255,0.25);
+      background: var(--sea) center/cover no-repeat;
+      overflow: hidden;
+      border-radius: 12px;
+    }
+
+    .stage::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.08);
+      pointer-events: none;
+    }
+
+    .miss {
+      position: absolute;
+      left: 12px;
+      top: 10px;
+      font-size: 13px;
+      color: #fff;
+      background: rgba(0, 0, 0, 0.45);
+      padding: 2px 8px;
+      border-radius: 6px;
+      z-index: 2;
+    }
+
+    .spot {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      font-size: 20px;
+      background: var(--sun);
+      color: #1b1a2e;
+      border: 3px solid #1b1a2e;
+      border-radius: 6px;
+      padding: 4px 10px;
+      cursor: pointer;
+      box-shadow: 3px 3px 0 #1b1a2e;
+      z-index: 5;
+      max-width: 180px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .chars {
+      position: absolute;
+      left: 8px;
+      bottom: 8px;
+      display: flex;
+      gap: 8px;
+      z-index: 2;
+    }
+
+    .por {
+      width: 84px;
+      aspect-ratio: 3 / 4;
+      border: 3px solid #1b1a2e;
+      background: var(--card);
+      position: relative;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      font: 400 34px Bangers, Impact, sans-serif;
+      color: var(--ink);
+      border-radius: 10px;
+      opacity: 0.9;
+      transition: transform .12s ease, outline-color .12s ease;
+    }
+
+    .por.on {
+      opacity: 1;
+      outline: 4px solid var(--sun);
+      transform: translateY(-6px);
+    }
+
+    .por b {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: #1b1a2e;
+      color: #fff;
+      font-size: 11px;
+      text-align: center;
+      padding: 1px 2px;
+      line-height: 1.2;
+    }
+
+    .fx {
+      position: absolute;
+      left: 50%;
+      top: 40%;
+      font-size: clamp(44px, 12vw, 92px);
+      color: var(--sun);
+      -webkit-text-stroke: 3px #1b1a2e;
+      text-shadow: 5px 5px 0 var(--acc);
+      transform: translate(-50%, -50%) rotate(-8deg);
+      animation: pop .42s ease-out;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    @keyframes pop {
+      0% { transform: translate(-50%, -50%) scale(.3) rotate(-8deg); opacity: 0; }
+      30% { opacity: 1; transform: translate(-50%, -50%) scale(1.15) rotate(-8deg); }
+      100% { transform: translate(-50%, -50%) scale(1) rotate(-8deg); opacity: 1; }
+    }
+
+    .cap {
+      margin-top: 14px;
+      background: var(--sun);
+      color: var(--ink);
+      border: 3px solid #1b1a2e;
+      padding: 10px 12px;
+      max-width: 70ch;
+      border-radius: 10px;
+      box-shadow: 0 3px 0 rgba(27,26,46,.18);
+    }
+
+    .bubble {
+      position: relative;
+      margin-top: 22px;
+      background: rgba(255,255,255,.92);
+      color: var(--ink);
+      border: 3px solid #1b1a2e;
+      border-radius: 20px;
+      padding: 10px 16px;
+      max-width: 70ch;
+      box-shadow: 0 4px 0 rgba(27,26,46,.15);
+    }
+
+    .bubble::after {
+      content: "";
+      position: absolute;
+      top: -17px;
+      left: 34px;
+      border: 10px solid transparent;
+      border-top: 0;
+      border-bottom: 16px solid #1b1a2e;
+    }
+
+    .bubble p {
+      margin: 2px 0 0;
+    }
+
+    .msg {
+      margin-top: 10px;
+      font-weight: 700;
+      color: var(--acc);
+      min-height: 28px;
+    }
+
+    .chs {
+      display: grid;
+      gap: 8px;
+      margin-top: 14px;
+      max-width: 70ch;
+    }
+
+    .ch {
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      border-radius: 6px;
+      padding: 2px 7px;
+      margin-right: 6px;
+      font-size: 14px;
+      min-height: 20px;
+      line-height: 1;
+      font-weight: 700;
+      letter-spacing: .02em;
+    }
+
+    .chs small { opacity: .75; }
+
+    .bar {
+      height: 14px;
+      border: 3px solid var(--ink);
+      background: var(--card);
+      margin: 6px 0;
+      max-width: 300px;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .bar i {
+      display: block;
+      height: 100%;
+      background: var(--acc);
+      transition: width .16s ease;
+    }
+
+    .row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .st {
+      margin-top: 16px;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      line-height: 1.4;
+    }
+
+    .status-box {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 8px;
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      background: rgba(255,255,255,.85);
+    }
+
+    .box {
+      margin: 30px auto;
+      max-width: 420px;
+      text-align: center;
+    }
+
+    .ov { position: fixed; inset: 0; background: rgba(0,0,0,.55); display: grid; place-items: center; padding: 12px; z-index: 9; }
+    .ov:empty { display: none; }
+    .pn { background: var(--card); border: 4px solid var(--ink); padding: 14px; max-width: 560px; width: 100%; max-height: 100%; overflow: auto; }
+    .im { border-top: 2px dashed var(--ink); padding: 8px 0; }
+    .im textarea { width: 100%; font: 14px/1.3 "Comic Neue", sans-serif; background: var(--bg); color: var(--ink); border: 2px solid var(--ink); margin: 4px 0; border-radius: 8px; padding: 8px; }
+
+    .fight-hud {
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      z-index: 6;
+      display: flex;
+      align-items: flex-end;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .hud-box {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font: 700 12px "Comic Neue", sans-serif;
+      background: rgba(255,255,255,.72);
+      border: 2px solid var(--ink);
+      border-radius: 10px;
+      padding: 6px 8px;
+    }
+
+    .hud-box .bar {
+      width: 170px;
+      max-width: 170px;
+    }
+
+    .hud-box .bar i { background: var(--grass); }
+    .hud-box.me .bar i { background: var(--acc); }
+
+    .fight-controls {
+      position: absolute;
+      right: 12px;
+      bottom: 12px;
+      z-index: 6;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .sr-only {
+      position: absolute !important;
+      height: 1px; width: 1px;
+      overflow: hidden;
+      clip: rect(1px, 1px, 1px, 1px);
+      white-space: nowrap;
+      border: 0;
+      padding: 0;
+      margin: -1px;
+    }
+
+    @media (max-width: 640px) {
+      .stage { aspect-ratio: 4 / 3; }
+      .fight-controls {
+        left: 12px;
+        right: 12px;
+        justify-content: space-between;
+      }
+      .spot {
+        font-size: 16px;
+        padding: 4px 8px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -62,6 +417,7 @@
     <div id="app" role="main" aria-live="polite" tabindex="-1"></div>
   </div>
   <div id="sr-msg" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
   <script>
     const STORY = {
       title: 'XIII · Kapitel 1: Der Strand',
@@ -74,7 +430,7 @@
           spots: [
             { label: 'Frau am Wasser', x: 24, y: 62, action: 'talk', node: 'n1' },
             { label: 'Brust', x: 48, y: 72, action: 'look', flag: 'tattoo', message: 'Auf deiner Brust brennt eine römische Zahl: XIII. Frisch genug, um zu schmerzen.' },
-            { label: 'Hosentasche', x: 64, y: 78, action: 'look', flag: 'key', item: 'Schlüssel', message: 'In der Hosentasche steckt ein Schlüsssel mit Nummer. Du behältst ihn.' },
+            { label: 'Hosentasche', x: 64, y: 78, action: 'look', flag: 'key', item: 'Schlüssel', message: 'In der Hosentasche steckt ein Schlüssel mit Nummer. Du behältst ihn.' },
             { label: 'Treibgut', x: 58, y: 82, action: 'look', flag: 'flask', item: 'Flasche', message: 'Zwischen den Algen liegt eine leere Glasflasche. Die könnte noch nützlich sein.' },
             { label: 'Rettungshütte', x: 80, y: 46, action: 'goto', target: 'huette' }
           ]
@@ -90,7 +446,12 @@
             { label: 'Vom Strand', x: 54, y: 88, action: 'goto', target: 'strand' }
           ]
         },
-        fight: { bg: 'linear-gradient(180deg, rgba(30,0,0,.18), rgba(0,0,0,.25))', text: 'Die Situation eskaliert. Ein Gegner steht dir gegenüber.', chars: [], spots: [] }
+        fight: {
+          bg: 'linear-gradient(180deg, rgba(30,0,0,.18), rgba(0,0,0,.25))',
+          text: 'Die Situation eskaliert. Ein Gegner steht dir gegenüber.',
+          chars: [],
+          spots: []
+        }
       },
       chars: {
         held: { name: 'Du', initial: 'D' },
@@ -106,9 +467,21 @@
             { tag: 'Drohen', text: 'Kein Wort zu irgendwem, verstanden?', next: 'n4', stat: 'Stärke', req: 5 }
           ]
         },
-        n2: { speaker: 'retterin', text: 'Eine römische XIII auf der Brust und ein Loch im Kopf... Komm in die Hütte, ich verbinde dich.', choices: [{ tag: 'Weiter', text: 'Danke. Ich komme mit.', next: 'end' }] },
-        n3: { speaker: 'retterin', text: 'Ein Charmeur mit Gedächtnisverlust, das fehlte noch. Na komm, in die Hütte gibt es einen Verband.', choices: [{ tag: 'Weiter', text: 'Ich bin schon unterwegs.', next: 'end' }] },
-        n4: { speaker: 'retterin', text: 'Lass das! Ich will dir doch nur helfen. In die Hütte, sofort!', choices: [{ tag: 'Weiter', text: 'Na gut.', next: 'end' }] },
+        n2: {
+          speaker: 'retterin',
+          text: 'Eine römische XIII auf der Brust und ein Loch im Kopf... Komm in die Hütte, ich verbinde dich.',
+          choices: [{ tag: 'Weiter', text: 'Danke. Ich komme mit.', next: 'huette' }]
+        },
+        n3: {
+          speaker: 'retterin',
+          text: 'Ein Charmeur mit Gedächtnisverlust, das fehlte noch. Na komm, in die Hütte gibt es einen Verband.',
+          choices: [{ tag: 'Weiter', text: 'Ich bin schon unterwegs.', next: 'huette' }]
+        },
+        n4: {
+          speaker: 'retterin',
+          text: 'Lass das! Ich will dir doch nur helfen. In die Hütte, sofort!',
+          choices: [{ tag: 'Weiter', text: 'Na gut.', next: 'huette' }]
+        },
         h1: {
           speaker: 'retterin',
           text: 'Draußen steht ein schwarzer Wagen. Die Männer sehen nicht aus wie Badegäste. Kennst du die? Ich rufe die Polizei!',
@@ -120,7 +493,7 @@
       }
     };
 
-    const state = {
+    const initialState = () => ({
       scene: STORY.start,
       hp: 10,
       money: 60,
@@ -131,8 +504,25 @@
       mode: 'scene',
       enemyHp: 0,
       enemyMaxHp: 0,
-      fx: ''
-    };
+      enemyName: 'Gegner',
+      fx: '',
+      turn: 0
+    });
+
+    const state = initialState();
+
+    function randomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function setFx(label) {
+      state.fx = label;
+      window.clearTimeout(setFx.timeoutId);
+      setFx.timeoutId = window.setTimeout(() => {
+        state.fx = '';
+        render();
+      }, 500);
+    }
 
     function render() {
       const app = document.getElementById('app');
@@ -144,9 +534,11 @@
         return `<div class="por ${state.node && STORY.nodes[state.node] && STORY.nodes[state.node].speaker === id ? 'on' : ''}"><b>${person.name}</b></div>`;
       }).join('');
 
-      const spots = (scene.spots || []).filter((spot) => !(spot.flag && state.flags[spot.flag])).map((spot, index) => `
-        <button class="spot" type="button" style="left:${spot.x}%;top:${spot.y}%" data-action="spot" data-index="${index}">${spot.label}</button>
-      `).join('');
+      const spots = (scene.spots || [])
+        .filter((spot) => !(spot.flag && state.flags[spot.flag]))
+        .map((spot, index) => `
+          <button class="spot" type="button" style="left:${spot.x}%;top:${spot.y}%" data-action="spot" data-index="${index}">${spot.label}</button>
+        `).join('');
 
       let dialog = '';
       if (state.mode === 'dialog' && state.node) {
@@ -160,7 +552,8 @@
           <div class="chs">
             ${node.choices.map((choice, idx) => `
               <button class="btn ch" type="button" data-action="choice" data-index="${idx}">
-                <span class="tag" style="background:${tagColor(choice.tag)}">${choice.tag}</span>${choice.text}
+                <span class="tag" style="background:${tagColor(choice.tag)}">${choice.tag}</span>
+                <span>${choice.text}${choice.stat ? ` <small>(benötigt ${choice.stat} ${choice.req})</small>` : ''}</span>
               </button>
             `).join('')}
           </div>
@@ -174,7 +567,7 @@
             <div class="bar"><i style="width:${Math.max(0, (state.hp / 10) * 100)}%"></i></div>
           </div>
           <div class="hud-box">
-            <div>Gegner</div>
+            <div>${state.enemyName}</div>
             <div class="bar"><i style="width:${Math.max(0, (state.enemyHp / Math.max(1, state.enemyMaxHp)) * 100)}%"></i></div>
           </div>
         </div>
@@ -185,7 +578,9 @@
         </div>
       ` : '';
 
-      const inv = state.inventory.length ? state.inventory.map(i => `<span class="tag" style="background:#2a6fdb">${i}</span>`).join(' ') : '<span class="tag" style="background:#666">leer</span>';
+      const inv = state.inventory.length
+        ? state.inventory.map((i) => `<span class="tag" style="background:#2a6fdb">${i}</span>`).join(' ')
+        : '<span class="tag" style="background:#666">leer</span>';
 
       app.innerHTML = `
         <div class="top">
@@ -203,14 +598,19 @@
         <div class="cap">${scene.text}</div>
         ${dialog}
         <div class="msg">${state.message || ''}</div>
-        <div class="st">LP: ${state.hp}/10 · Geld: ${state.money} · Inventar: ${inv}</div>
+        <div class="st">
+          <span class="status-box">LP: ${state.hp}/10</span>
+          <span class="status-box">Geld: ${state.money}</span>
+          <span class="status-box">Inventar: ${inv}</span>
+        </div>
       `;
+
       document.getElementById('sr-msg').textContent = state.message || scene.text;
       app.focus();
     }
 
     function tagColor(tag) {
-      const map = { Reden:'#2a6fdb', Flirten:'#d63384', Drohen:'#c0392b', Weiter:'#555', Bestechen:'#2a9d5c' };
+      const map = { Reden: '#2a6fdb', Flirten: '#d63384', Drohen: '#c0392b', Weiter: '#555', Bestechen: '#2a9d5c' };
       return map[tag] || '#666';
     }
 
@@ -219,8 +619,21 @@
       if (!state.inventory.includes(item)) state.inventory.push(item);
     }
 
-    function startFight(enemyHp = 8) {
+    function gainHealth(amount) {
+      if (!amount) return;
+      state.hp = Math.min(10, state.hp + amount);
+    }
+
+    function setScene(nextScene) {
+      state.scene = nextScene;
+      state.node = null;
+      state.mode = 'scene';
+      render();
+    }
+
+    function startFight(enemyName = 'Unbekannter Gegner', enemyHp = 8) {
       state.mode = 'fight';
+      state.enemyName = enemyName;
       state.enemyHp = enemyHp;
       state.enemyMaxHp = enemyHp;
       state.scene = 'fight';
@@ -233,24 +646,24 @@
       const choice = STORY.nodes[state.node].choices[index];
       if (!choice) return;
 
-      const needsStat = choice.stat;
-      if (needsStat) {
-        const strength = { Stärke: 3, Charme: 2, Geschick: 3 }[needsStat] || 0;
-        const roll = 1 + Math.floor(Math.random() * 6);
-        const ok = roll + strength >= (choice.req || 0);
-        state.message = `${needsStat}-Probe: ${roll} + ${strength} ${ok ? '≥' : '<'} ${choice.req}. ${ok ? 'Erfolgreich.' : 'Misslungen.'}`;
-        if (choice.next === 'fight' && ok) {
-          state.node = null;
-          state.mode = 'fight';
-          startFight(8);
-          return;
-        }
+      const statBonus = choice.stat ? { Stärke: 3, Charme: 2, Geschick: 3 }[choice.stat] || 0 : 0;
+      if (choice.stat) {
+        const roll = randomInt(1, 6);
+        const ok = roll + statBonus >= (choice.req || 0);
+        state.message = `${choice.stat}-Probe: ${roll} + ${statBonus} ${ok ? '≥' : '<'} ${choice.req}. ${ok ? 'Erfolgreich.' : 'Misslungen.'}`;
+      }
+
+      if (choice.next === 'fight' && choice.stat && (choice.req || 0) > (randomInt(1, 6) + statBonus)) {
+        state.node = null;
+        state.mode = 'scene';
+        render();
+        return;
       }
 
       if (choice.next === 'fight') {
         state.node = null;
-        state.mode = 'fight';
-        startFight(8);
+        state.mode = 'scene';
+        startFight('Schwarzer Mann', 8);
         return;
       }
 
@@ -272,51 +685,6 @@
 
       state.node = choice.next || null;
       state.mode = state.node ? 'dialog' : 'scene';
-      render();
-    }
-
-    function fightAction(index) {
-      if (state.mode !== 'fight') return;
-
-      if (index === 2) {
-        state.mode = 'scene';
-        state.message = 'Du ziehst dich zurück und verlässt den Kampf.';
-        render();
-        return;
-      }
-
-      if (index === 0) {
-        const dmg = 1 + Math.floor(Math.random() * 3);
-        state.enemyHp = Math.max(0, state.enemyHp - dmg);
-        state.message = `Du triffst und verursachst ${dmg} Schaden.`;
-      } else if (index === 1) {
-        state.message = 'Du hältst die Deckung und nimmst weniger Schaden.';
-      }
-
-      if (state.enemyHp <= 0) {
-        state.enemyHp = 0;
-        state.money += 15;
-        state.message = 'Du besiegst deinen Gegner. Die Lage beruhigt sich.';
-        state.mode = 'scene';
-        state.scene = 'huette';
-        state.node = null;
-        render();
-        return;
-      }
-
-      const enemyDmg = 1 + Math.floor(Math.random() * 3) - (index === 1 ? 1 : 0);
-      const finalDamage = Math.max(0, enemyDmg);
-      state.hp = Math.max(0, state.hp - finalDamage);
-      state.message += ` Der Gegner trifft für ${finalDamage} Schaden.`;
-
-      if (state.hp <= 0) {
-        state.hp = 0;
-        state.message = 'Du bist ausgeknockt. Der Kampf ist verloren.';
-        state.mode = 'scene';
-        state.scene = 'strand';
-        state.node = null;
-      }
-
       render();
     }
 
@@ -343,8 +711,58 @@
 
       if (spot.flag) state.flags[spot.flag] = true;
       if (spot.item) giveItem(spot.item);
-      if (spot.heal) state.hp = Math.min(10, state.hp + spot.heal);
+      if (spot.heal) gainHealth(spot.heal);
       state.message = spot.message || 'Du schaust genauer hin.';
+      setFx('!');
+      render();
+    }
+
+    function fightAction(index) {
+      if (state.mode !== 'fight') return;
+
+      if (index === 2) {
+        state.mode = 'scene';
+        state.message = 'Du ziehst dich zurück und verlässt den Kampf.';
+        state.scene = 'huette';
+        state.node = null;
+        render();
+        return;
+      }
+
+      if (index === 0) {
+        const dmg = randomInt(1, 3);
+        state.enemyHp = Math.max(0, state.enemyHp - dmg);
+        state.message = `Du triffst und verursachst ${dmg} Schaden.`;
+        setFx('BAM');
+      } else if (index === 1) {
+        state.message = 'Du hältst die Deckung und nimmst weniger Schaden.';
+        setFx('BLOCK');
+      }
+
+      if (state.enemyHp <= 0) {
+        state.enemyHp = 0;
+        state.money += 15;
+        state.message = 'Du besiegst deinen Gegner. Die Lage beruhigt sich.';
+        state.mode = 'scene';
+        state.scene = 'huette';
+        state.node = null;
+        render();
+        return;
+      }
+
+      const enemyDmg = randomInt(1, 3) - (index === 1 ? 1 : 0);
+      const finalDamage = Math.max(0, enemyDmg);
+      state.hp = Math.max(0, state.hp - finalDamage);
+      state.message += ` Der Gegner trifft für ${finalDamage} Schaden.`;
+
+      if (state.hp <= 0) {
+        state.hp = 0;
+        state.message = 'Du bist ausgeknockt. Der Kampf ist verloren.';
+        state.mode = 'scene';
+        state.scene = 'strand';
+        state.node = null;
+      }
+
       render();
     }
 
@@ -358,17 +776,7 @@
       else if (action === 'choice') applyChoice(index);
       else if (action === 'fight') fightAction(index);
       else if (action === 'restart') {
-        state.scene = STORY.start;
-        state.hp = 10;
-        state.money = 60;
-        state.inventory = [];
-        state.flags = {};
-        state.message = 'Du bist wach. Was tust du?';
-        state.node = null;
-        state.mode = 'scene';
-        state.enemyHp = 0;
-        state.enemyMaxHp = 0;
-        state.fx = '';
+        Object.assign(state, initialState());
         render();
       }
     });
