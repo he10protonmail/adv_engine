@@ -4,235 +4,64 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Comic-Plot-Engine · Test mit XIII</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bg: #cfe8ef;
-      --ink: #1b1a2e;
-      --card: #fffdf4;
-      --acc: #e4412f;
-      --sun: #ffd23f;
-      --sea: #1f6f78;
-    }
-
-    * { box-sizing: border-box; }
-    html, body { margin: 0; }
-    body {
-      background: var(--bg);
-      color: var(--ink);
-      font: 400 17px/1.45 "Comic Neue", "Trebuchet MS", sans-serif;
-      min-height: 100vh;
-      display: grid;
-      place-items: center;
-    }
-    .wrap {
-      width: min(920px, calc(100vw - 20px));
-      padding: 10px 0 18px;
-    }
-    .app {
-      background: transparent;
-    }
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 10px;
-    }
-    h1, h2, .spot, .fx {
-      font-family: Bangers, Impact, sans-serif;
-      letter-spacing: 0.04em;
-      font-weight: 400;
-    }
-    h1 {
-      margin: 0;
-      font-size: clamp(28px, 4vw, 40px);
-    }
-    .btn {
-      font: 700 15px/1.2 "Comic Neue", sans-serif;
-      color: var(--ink);
-      background: var(--card);
-      border: 3px solid var(--ink);
-      border-radius: 8px;
-      box-shadow: 3px 3px 0 var(--ink);
-      padding: 9px 12px;
-      cursor: pointer;
-    }
-    .btn:hover { background: var(--sun); }
-    .btn:focus-visible, .spot:focus-visible { outline: 3px solid var(--acc); outline-offset: 2px; }
-    .stage {
-      position: relative;
-      aspect-ratio: 16 / 9;
-      background: linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.1)), var(--sea);
-      border: 4px solid var(--ink);
-      box-shadow: 6px 6px 0 var(--ink);
-      overflow: hidden;
-      background-size: cover;
-      background-position: center;
-    }
-    .stage::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: rgba(0,0,0,.08);
-      pointer-events: none;
-    }
-    .spot {
-      position: absolute;
-      transform: translate(-50%, -50%);
-      background: var(--sun);
-      color: var(--ink);
-      border: 3px solid var(--ink);
-      border-radius: 8px;
-      padding: 4px 10px;
-      cursor: pointer;
-      box-shadow: 3px 3px 0 var(--ink);
-      font-size: clamp(15px, 2vw, 20px);
-      z-index: 2;
-    }
-    .spot:hover { background: var(--acc); color: white; }
-    .chars {
-      position: absolute;
-      left: 10px;
-      bottom: 10px;
-      display: flex;
-      gap: 8px;
-      z-index: 2;
-    }
-    .portrait {
-      width: 84px;
-      aspect-ratio: 3 / 4;
-      border: 3px solid var(--ink);
-      background: var(--card);
-      position: relative;
-      overflow: hidden;
-      display: grid;
-      place-items: center;
-    }
-    .portrait.active {
-      outline: 4px solid var(--sun);
-      transform: translateY(-6px);
-    }
-    .portrait b {
-      position: absolute;
-      left: 0; right: 0; bottom: 0;
-      background: rgba(27,26,46,.92);
-      color: white;
-      font-size: 11px;
-      text-align: center;
-      padding: 2px 4px;
-      line-height: 1.2;
-      font-family: Bangers, Impact, sans-serif;
-      letter-spacing: 0.04em;
-    }
-    .portrait .letter {
-      font-family: Bangers, Impact, sans-serif;
-      font-size: 34px;
-      color: var(--ink);
-    }
-    .fx {
-      position: absolute;
-      left: 50%;
-      top: 38%;
-      transform: translate(-50%, -50%) rotate(-8deg);
-      color: var(--sun);
-      font-size: clamp(42px, 12vw, 90px);
-      -webkit-text-stroke: 3px var(--ink);
-      text-shadow: 5px 5px 0 var(--acc);
-      z-index: 3;
-      pointer-events: none;
-      animation: pop .9s ease both;
-    }
-    @keyframes pop {
-      0% { opacity: 0; transform: translate(-50%, -50%) scale(.3) rotate(-8deg); }
-      30% { opacity: 1; transform: translate(-50%, -50%) scale(1.15) rotate(-8deg); }
-      100% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(-8deg); }
-    }
-    .caption, .bubble, .message {
-      margin-top: 14px;
-      max-width: 70ch;
-    }
-    .caption {
-      background: var(--sun);
-      border: 3px solid var(--ink);
-      padding: 8px 12px;
-      font-weight: 700;
-    }
-    .bubble {
-      position: relative;
-      background: white;
-      border: 3px solid var(--ink);
-      border-radius: 20px;
-      padding: 10px 16px;
-      max-width: 70ch;
-    }
-    .bubble::after {
-      content: "";
-      position: absolute;
-      top: -16px;
-      left: 32px;
-      border: 10px solid transparent;
-      border-top: 0;
-      border-bottom: 16px solid var(--ink);
-    }
-    .bubble strong {
-      display: block;
-      margin-bottom: 4px;
-    }
-    .message {
-      color: var(--acc);
-      font-weight: 700;
-      min-height: 28px;
-    }
-    .choices {
-      display: grid;
-      gap: 8px;
-      margin-top: 12px;
-      max-width: 70ch;
-    }
-    .choice {
-      text-align: left;
-    }
-    .tag {
-      display: inline-block;
-      color: white;
-      background: #555;
-      border-radius: 5px;
-      padding: 4px 8px;
-      margin-right: 8px;
-      font-size: 12px;
-      font-weight: 700;
-      vertical-align: middle;
-    }
-    .stats {
-      margin-top: 12px;
-      font-size: 15px;
-      line-height: 1.5;
-      padding-top: 10px;
-      border-top: 2px dashed var(--ink);
-    }
-    .inventory {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 12px;
-    }
-    .chip {
-      background: var(--card);
-      border: 2px solid var(--ink);
-      border-radius: 999px;
-      padding: 4px 8px;
-      font-weight: 700;
-      font-size: 14px;
-    }
-    .hidden { display: none; }
+    :root{--bg:#cfe8ef;--ink:#1b1a2e;--card:#fffdf4;--acc:#e4412f;--sun:#ffd23f;--sea:#1f6f78;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+    *{box-sizing:border-box}
+    html,body{margin:0}
+    body{background:var(--bg);color:var(--ink);font:400 17px/1.45 "Comic Neue","Comic Sans MS",sans-serif;min-height:100vh;display:grid;place-items:center}
+    h1,h2,.spot,.fx,.por b{font-family:Bangers,Impact,sans-serif;letter-spacing:.04em;font-weight:400}
+    .wrap{max-width:920px;margin:0 auto;padding:12px;width:min(920px,calc(100vw - 20px))}
+    .top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+    h1{font-size:clamp(28px,4vw,40px);margin:0}
+    .btn,.ch{font:700 16px "Comic Neue","Comic Sans MS",sans-serif;color:var(--ink);background:var(--card);border:3px solid var(--ink);border-radius:8px;padding:8px 12px;box-shadow:3px 3px 0 var(--ink);cursor:pointer}
+    .btn:hover,.ch:hover{background:var(--sun);color:#1b1a2e}
+    .btn:focus-visible,.ch:focus-visible,.spot:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+    .stage{position:relative;aspect-ratio:16/9;border:4px solid var(--ink);box-shadow:6px 6px 0 var(--ink);background:var(--sea) center/cover no-repeat;overflow:hidden}
+    .stage::before{content:"";position:absolute;inset:0;background:rgba(0,0,0,.08);pointer-events:none}
+    .miss{position:absolute;left:12px;top:10px;font-size:13px;color:#fff;background:rgba(0,0,0,.45);padding:2px 8px;border-radius:6px;z-index:2}
+    .spot{position:absolute;transform:translate(-50%,-50%);font-size:20px;background:var(--sun);color:#1b1a2e;border:3px solid #1b1a2e;border-radius:6px;padding:4px 10px;cursor:pointer;box-shadow:3px 3px 0 #1b1a2e;z-index:3}
+    .spot:hover{background:var(--acc);color:#fff}
+    .chars{position:absolute;left:8px;bottom:8px;display:flex;gap:8px;z-index:2}
+    .por{width:84px;aspect-ratio:3/4;border:3px solid #1b1a2e;background:var(--card);position:relative;overflow:hidden;display:grid;place-items:center;font:400 34px Bangers,Impact,sans-serif;color:#1b1a2e}
+    .por.on{opacity:1;outline:4px solid var(--sun);transform:translateY(-6px)}
+    .por b{position:absolute;left:0;right:0;bottom:0;background:#1b1a2e;color:#fff;font-size:11px;text-align:center;padding:1px 2px;line-height:1.2}
+    .fx{position:absolute;left:50%;top:40%;font-size:clamp(44px,12vw,92px);color:var(--sun);-webkit-text-stroke:3px #1b1a2e;text-shadow:5px 5px 0 var(--acc);transform:translate(-50%,-50%) rotate(-8deg);animation:pop .9s ease both;z-index:4;pointer-events:none}
+    @keyframes pop{0%{transform:translate(-50%,-50%) scale(.3) rotate(-8deg);opacity:0}30%{opacity:1;transform:translate(-50%,-50%) scale(1.15) rotate(-8deg)}100%{transform:translate(-50%,-50%) scale(1) rotate(-8deg);opacity:1}}
+    .cap{margin-top:14px;background:var(--sun);color:#1b1a2e;border:3px solid #1b1a2e;padding:8px 12px;max-width:70ch}
+    .bubble{position:relative;margin-top:22px;background:#fff;color:#1b1a2e;border:3px solid #1b1a2e;border-radius:20px;padding:10px 16px;max-width:70ch}
+    .bubble::after{content:"";position:absolute;top:-17px;left:34px;border:10px solid transparent;border-top:0;border-bottom:16px solid #1b1a2e}
+    .bubble p{margin:2px 0 0}
+    .msg{margin-top:10px;font-weight:700;color:var(--acc);min-height:28px}
+    .chs{display:grid;gap:8px;margin-top:14px;max-width:70ch}
+    .ch{text-align:left}
+    .tag{font-style:normal;color:#fff;border-radius:5px;padding:1px 7px;margin-right:6px;font-size:14px}
+    .chs small{opacity:.75}
+    .bar{height:14px;border:3px solid var(--ink);background:var(--card);margin:6px 0;max-width:300px}
+    .bar i{display:block;height:100%;background:var(--acc)}
+    .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .st{margin-top:16px;font-size:15px}
+    .box{margin:30px auto;max-width:420px;text-align:center}
+    .ov{position:fixed;inset:0;background:rgba(0,0,0,.55);display:grid;place-items:center;padding:12px;z-index:9}
+    .ov:empty{display:none}
+    .pn{background:var(--card);border:4px solid var(--ink);padding:14px;max-width:560px;width:100%;max-height:100%;overflow:auto}
+    .im{border-top:2px dashed var(--ink);padding:8px 0}
+    .im textarea{width:100%;font:14px/1.3 "Comic Neue",sans-serif;background:var(--bg);color:var(--ink);border:2px solid var(--ink);margin:4px 0}
+    .fight-hud{position:absolute;left:10px;top:10px;z-index:6;display:flex;align-items:flex-end;gap:12px}
+    .hud-box{display:flex;flex-direction:column;gap:4px;font:700 12px "Comic Neue",sans-serif}
+    .hud-box .bar{width:170px;max-width:170px}
+    .hud-box .bar i{background:#2a9d5c}
+    .hud-box.me .bar i{background:var(--acc)}
+    .fight-controls{position:absolute;right:12px;bottom:12px;z-index:6;display:flex;gap:8px;flex-wrap:wrap}
+    .sr-only{position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap;border:0;padding:0;margin:-1px}
   </style>
 </head>
 <body>
   <div class="wrap">
-    <div id="app" class="app" aria-live="polite"></div>
+    <div id="app" role="main" aria-live="polite" tabindex="-1"></div>
   </div>
-
+  <div id="sr-msg" class="sr-only" aria-live="polite" aria-atomic="true"></div>
   <script>
     const STORY = {
       title: 'XIII · Kapitel 1: Der Strand',
@@ -260,7 +89,8 @@
             { label: 'Retterin', x: 42, y: 64, action: 'talk', node: 'h1' },
             { label: 'Vom Strand', x: 54, y: 88, action: 'goto', target: 'strand' }
           ]
-        }
+        },
+        fight: { bg: 'linear-gradient(180deg, rgba(30,0,0,.18), rgba(0,0,0,.25))', text: 'Die Situation eskaliert. Ein Gegner steht dir gegenüber.', chars: [], spots: [] }
       },
       chars: {
         held: { name: 'Du', initial: 'D' },
@@ -276,27 +106,15 @@
             { tag: 'Drohen', text: 'Kein Wort zu irgendwem, verstanden?', next: 'n4', stat: 'Stärke', req: 5 }
           ]
         },
-        n2: {
-          speaker: 'retterin',
-          text: 'Eine römische XIII auf der Brust und ein Loch im Kopf... Komm in die Hütte, ich verbinde dich.',
-          choices: [{ tag: 'Weiter', text: 'Danke. Ich komme mit.', next: 'end' }]
-        },
-        n3: {
-          speaker: 'retterin',
-          text: 'Ein Charmeur mit Gedächtnisverlust, das fehlte noch. Na komm, in die Hütte gibt es einen Verband.',
-          choices: [{ tag: 'Weiter', text: 'Ich bin schon unterwegs.', next: 'end' }]
-        },
-        n4: {
-          speaker: 'retterin',
-          text: 'Lass das! Ich will dir doch nur helfen. In die Hütte, sofort!',
-          choices: [{ tag: 'Weiter', text: 'Na gut.', next: 'end' }]
-        },
+        n2: { speaker: 'retterin', text: 'Eine römische XIII auf der Brust und ein Loch im Kopf... Komm in die Hütte, ich verbinde dich.', choices: [{ tag: 'Weiter', text: 'Danke. Ich komme mit.', next: 'end' }] },
+        n3: { speaker: 'retterin', text: 'Ein Charmeur mit Gedächtnisverlust, das fehlte noch. Na komm, in die Hütte gibt es einen Verband.', choices: [{ tag: 'Weiter', text: 'Ich bin schon unterwegs.', next: 'end' }] },
+        n4: { speaker: 'retterin', text: 'Lass das! Ich will dir doch nur helfen. In die Hütte, sofort!', choices: [{ tag: 'Weiter', text: 'Na gut.', next: 'end' }] },
         h1: {
           speaker: 'retterin',
           text: 'Draußen steht ein schwarzer Wagen. Die Männer sehen nicht aus wie Badegäste. Kennst du die? Ich rufe die Polizei!',
           choices: [
             { tag: 'Reden', text: 'Nicht! Die sind meinetwegen hier. Versteck dich.', next: 'end' },
-            { tag: 'Drohen', text: 'Leg das Telefon weg. Sofort.', next: 'end', stat: 'Stärke', req: 5 }
+            { tag: 'Drohen', text: 'Leg das Telefon weg. Sofort.', next: 'fight', stat: 'Stärke', req: 5 }
           ]
         }
       }
@@ -310,7 +128,10 @@
       flags: {},
       message: 'Du bist wach. Was tust du?',
       node: null,
-      mode: 'scene'
+      mode: 'scene',
+      enemyHp: 0,
+      enemyMaxHp: 0,
+      fx: ''
     };
 
     function render() {
@@ -318,27 +139,14 @@
       const scene = STORY.scenes[state.scene];
       if (!scene) return;
 
-      const chars = scene.chars || [];
-      const portraits = chars.map((id) => {
+      const portraits = (scene.chars || []).map((id) => {
         const person = STORY.chars[id];
-        return `
-          <div class="portrait ${state.node && STORY.nodes[state.node].speaker === id ? 'active' : ''}">
-            <span class="letter">${person.initial}</span>
-            <b>${person.name}</b>
-          </div>
-        `;
+        return `<div class="por ${state.node && STORY.nodes[state.node] && STORY.nodes[state.node].speaker === id ? 'on' : ''}"><b>${person.name}</b></div>`;
       }).join('');
 
-      const spots = (scene.spots || []).filter((spot) => {
-        if (spot.flag && state.flags[spot.flag]) return false;
-        return true;
-      }).map((spot, index) => `
-        <button type="button" class="spot" style="left:${spot.x}%; top:${spot.y}%" data-action="spot" data-index="${index}">${spot.label}</button>
+      const spots = (scene.spots || []).filter((spot) => !(spot.flag && state.flags[spot.flag])).map((spot, index) => `
+        <button class="spot" type="button" style="left:${spot.x}%;top:${spot.y}%" data-action="spot" data-index="${index}">${spot.label}</button>
       `).join('');
-
-      const inventory = state.inventory.length
-        ? `<div class="inventory">${state.inventory.map(item => `<span class="chip">${item}</span>`).join('')}</div>`
-        : `<div class="inventory"><span class="chip">leer</span></div>`;
 
       let dialog = '';
       if (state.mode === 'dialog' && state.node) {
@@ -347,53 +155,62 @@
         dialog = `
           <div class="bubble">
             <strong>${speaker.name}</strong>
-            <div>${node.text}</div>
+            <p>${node.text}</p>
           </div>
-          <div class="choices">
+          <div class="chs">
             ${node.choices.map((choice, idx) => `
-              <button type="button" class="btn choice" data-action="choice" data-index="${idx}">
-                <span class="tag" style="background:${colorFor(choice.tag)}">${choice.tag}</span>${choice.text}
+              <button class="btn ch" type="button" data-action="choice" data-index="${idx}">
+                <span class="tag" style="background:${tagColor(choice.tag)}">${choice.tag}</span>${choice.text}
               </button>
             `).join('')}
           </div>
         `;
       }
 
-      app.innerHTML = `
-        <div class="topbar">
-          <h1>${STORY.title}</h1>
-          <div>
-            <button type="button" class="btn" data-action="restart">Neustart</button>
+      const fightHud = state.mode === 'fight' ? `
+        <div class="fight-hud">
+          <div class="hud-box me">
+            <div>Du</div>
+            <div class="bar"><i style="width:${Math.max(0, (state.hp / 10) * 100)}%"></i></div>
           </div>
+          <div class="hud-box">
+            <div>Gegner</div>
+            <div class="bar"><i style="width:${Math.max(0, (state.enemyHp / Math.max(1, state.enemyMaxHp)) * 100)}%"></i></div>
+          </div>
+        </div>
+        <div class="fight-controls">
+          <button class="btn" type="button" data-action="fight" data-index="0">Angreifen</button>
+          <button class="btn" type="button" data-action="fight" data-index="1">Blocken</button>
+          <button class="btn" type="button" data-action="fight" data-index="2">Fliehen</button>
+        </div>
+      ` : '';
+
+      const inv = state.inventory.length ? state.inventory.map(i => `<span class="tag" style="background:#2a6fdb">${i}</span>`).join(' ') : '<span class="tag" style="background:#666">leer</span>';
+
+      app.innerHTML = `
+        <div class="top">
+          <h1>${STORY.title}</h1>
+          <button class="btn" type="button" data-action="restart">Neustart</button>
         </div>
 
         <div class="stage" style="background-image:${scene.bg}">
           ${spots}
           <div class="chars">${portraits}</div>
           ${state.fx ? `<div class="fx">${state.fx}</div>` : ''}
+          ${fightHud}
         </div>
 
-        <div class="caption">${scene.text}</div>
-
+        <div class="cap">${scene.text}</div>
         ${dialog}
-
-        <div class="message">${state.message || ''}</div>
-        <div class="stats">
-          LP: ${Math.max(0, state.hp)}/10 &nbsp;•&nbsp; Geld: ${state.money} $ &nbsp;•&nbsp; Inventar:
-          ${inventory}
-        </div>
+        <div class="msg">${state.message || ''}</div>
+        <div class="st">LP: ${state.hp}/10 · Geld: ${state.money} · Inventar: ${inv}</div>
       `;
+      document.getElementById('sr-msg').textContent = state.message || scene.text;
+      app.focus();
     }
 
-    function colorFor(tag) {
-      const map = {
-        Reden: '#2a6fdb',
-        Flirten: '#d63384',
-        Drohen: '#c0392b',
-        Bestechen: '#2a9d5c',
-        Weiter: '#555',
-        '': '#666'
-      };
+    function tagColor(tag) {
+      const map = { Reden:'#2a6fdb', Flirten:'#d63384', Drohen:'#c0392b', Weiter:'#555', Bestechen:'#2a9d5c' };
       return map[tag] || '#666';
     }
 
@@ -402,41 +219,109 @@
       if (!state.inventory.includes(item)) state.inventory.push(item);
     }
 
+    function startFight(enemyHp = 8) {
+      state.mode = 'fight';
+      state.enemyHp = enemyHp;
+      state.enemyMaxHp = enemyHp;
+      state.scene = 'fight';
+      state.message = 'Der Kampf beginnt! Wähle deine Aktion.';
+      render();
+    }
+
     function applyChoice(index) {
       if (!state.node) return;
-      const node = STORY.nodes[state.node];
-      const choice = node.choices[index];
+      const choice = STORY.nodes[state.node].choices[index];
       if (!choice) return;
 
       const needsStat = choice.stat;
       if (needsStat) {
-        const statValue = { Stärke: 3, Charme: 2, Geschick: 3 }[needsStat] || 0;
+        const strength = { Stärke: 3, Charme: 2, Geschick: 3 }[needsStat] || 0;
         const roll = 1 + Math.floor(Math.random() * 6);
-        const passed = roll + statValue >= (choice.req || 0);
-        state.message = `${needsStat}-Probe: ${roll} + ${statValue} ${passed ? '≥' : '<'} ${choice.req}. ${passed ? 'Erfolgreich.' : 'Misslungen.'}`;
-        if (!passed && choice.next) {
-          state.node = choice.next;
-          state.mode = 'dialog';
-          render();
+        const ok = roll + strength >= (choice.req || 0);
+        state.message = `${needsStat}-Probe: ${roll} + ${strength} ${ok ? '≥' : '<'} ${choice.req}. ${ok ? 'Erfolgreich.' : 'Misslungen.'}`;
+        if (choice.next === 'fight' && ok) {
+          state.node = null;
+          state.mode = 'fight';
+          startFight(8);
           return;
         }
       }
 
-      if (choice.next === 'end') {
-        state.mode = 'scene';
+      if (choice.next === 'fight') {
         state.node = null;
+        state.mode = 'fight';
+        startFight(8);
+        return;
+      }
+
+      if (choice.next === 'end') {
+        state.node = null;
+        state.mode = 'scene';
         state.message = 'Die Situation wird klarer. Du gehst weiter.';
-      } else {
-        state.node = choice.next;
-        state.mode = 'dialog';
+        render();
+        return;
+      }
+
+      if (choice.next && STORY.scenes[choice.next]) {
+        state.scene = choice.next;
+        state.node = null;
+        state.mode = 'scene';
+        render();
+        return;
+      }
+
+      state.node = choice.next || null;
+      state.mode = state.node ? 'dialog' : 'scene';
+      render();
+    }
+
+    function fightAction(index) {
+      if (state.mode !== 'fight') return;
+
+      if (index === 2) {
+        state.mode = 'scene';
+        state.message = 'Du ziehst dich zurück und verlässt den Kampf.';
+        render();
+        return;
+      }
+
+      if (index === 0) {
+        const dmg = 1 + Math.floor(Math.random() * 3);
+        state.enemyHp = Math.max(0, state.enemyHp - dmg);
+        state.message = `Du triffst und verursachst ${dmg} Schaden.`;
+      } else if (index === 1) {
+        state.message = 'Du hältst die Deckung und nimmst weniger Schaden.';
+      }
+
+      if (state.enemyHp <= 0) {
+        state.enemyHp = 0;
+        state.money += 15;
+        state.message = 'Du besiegst deinen Gegner. Die Lage beruhigt sich.';
+        state.mode = 'scene';
+        state.scene = 'huette';
+        state.node = null;
+        render();
+        return;
+      }
+
+      const enemyDmg = 1 + Math.floor(Math.random() * 3) - (index === 1 ? 1 : 0);
+      const finalDamage = Math.max(0, enemyDmg);
+      state.hp = Math.max(0, state.hp - finalDamage);
+      state.message += ` Der Gegner trifft für ${finalDamage} Schaden.`;
+
+      if (state.hp <= 0) {
+        state.hp = 0;
+        state.message = 'Du bist ausgeknockt. Der Kampf ist verloren.';
+        state.mode = 'scene';
+        state.scene = 'strand';
+        state.node = null;
       }
 
       render();
     }
 
     function doSpot(index) {
-      const scene = STORY.scenes[state.scene];
-      const spot = (scene.spots || [])[index];
+      const spot = (STORY.scenes[state.scene].spots || [])[index];
       if (!spot) return;
 
       if (spot.action === 'goto') {
@@ -464,15 +349,15 @@
     }
 
     document.addEventListener('click', (event) => {
-      const target = event.target.closest('[data-action]');
-      if (!target) return;
-
-      const action = target.dataset.action;
-      const index = Number(target.dataset.index || -1);
+      const btn = event.target.closest('[data-action]');
+      if (!btn) return;
+      const action = btn.dataset.action;
+      const index = Number(btn.dataset.index ?? -1);
 
       if (action === 'spot') doSpot(index);
-      if (action === 'choice') applyChoice(index);
-      if (action === 'restart') {
+      else if (action === 'choice') applyChoice(index);
+      else if (action === 'fight') fightAction(index);
+      else if (action === 'restart') {
         state.scene = STORY.start;
         state.hp = 10;
         state.money = 60;
@@ -481,6 +366,9 @@
         state.message = 'Du bist wach. Was tust du?';
         state.node = null;
         state.mode = 'scene';
+        state.enemyHp = 0;
+        state.enemyMaxHp = 0;
+        state.fx = '';
         render();
       }
     });
