@@ -1,294 +1,491 @@
 <!DOCTYPE html>
-<html lang="de"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Comic-Plot-Engine · Test mit XIII</title>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#cfe8ef;--ink:#1b1a2e;--card:#fffdf4;--acc:#e4412f;--sun:#ffd23f;--sea:#1f6f78;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#11142a;--ink:#f4efe0;--card:#1d2145;--acc:#ff6b57;--sun:#ffd23f;--sea:#4cb8c4}}
-:root[data-theme="dark"]{--bg:#11142a;--ink:#f4efe0;--card:#1d2145;--acc:#ff6b57;--sun:#ffd23f;--sea:#4cb8c4}
-*{box-sizing:border-box}
-html,body{margin:0}
-body{background:var(--bg);color:var(--ink);font:400 17px/1.45 "Comic Neue","Comic Sans MS",sans-serif}
-h1,h2,.spot,.fx,.por b{font-family:Bangers,Impact,sans-serif;letter-spacing:.04em;font-weight:400}
-.wrap{max-width:860px;margin:0 auto;padding:12px}
-.top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
-h1{font-size:30px;margin:0}
-h2{font-size:26px;margin:0 0 6px}
-.btn,.ch{font:700 16px "Comic Neue","Comic Sans MS",sans-serif;color:var(--ink);background:var(--card);border:3px solid var(--ink);border-radius:8px;padding:8px 12px;box-shadow:3px 3px 0 var(--ink);cu[...]
-.btn:hover,.ch:hover{background:var(--sun);color:#1b1a2e}
-.btn:focus-visible,.ch:focus-visible,.spot:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
-.stage{position:relative;aspect-ratio:16/9;border:4px solid var(--ink);box-shadow:6px 6px 0 var(--ink);background:var(--sea) center/cover;overflow:hidden}
-.miss{position:absolute;left:12px;top:10px;font-size:13px;color:#fff;background:rgba(0,0,0,.45);padding:2px 8px;border-radius:6px}
-.spot{position:absolute;transform:translate(-50%,-50%);font-size:20px;background:var(--sun);color:#1b1a2e;border:3px solid #1b1a2e;border-radius:6px;padding:4px 10px;cursor:pointer;box-shadow:3px [...]
-.spot:hover{background:var(--acc);color:#fff}
-.chars{position:absolute;left:8px;bottom:8px;display:flex;gap:8px}
-.por{width:84px;aspect-ratio:3/4;border:3px solid #1b1a2e;background:var(--card);position:relative;overflow:hidden;display:grid;place-items:center;font:400 34px Bangers,Impact,sans-serif;color:#1b[...]
-.por.on{opacity:1;outline:4px solid var(--sun);transform:translateY(-6px)}
-.por img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.por b{position:absolute;left:0;right:0;bottom:0;background:#1b1a2e;color:#fff;font-size:11px;text-align:center;padding:1px 2px;line-height:1.2}
-.fx{position:absolute;left:50%;top:40%;font-size:clamp(44px,12vw,92px);color:var(--sun);-webkit-text-stroke:3px #1b1a2e;text-shadow:5px 5px 0 var(--acc);transform:translate(-50%,-50%) rotate(-8deg);an[...]
-@keyframes pop{0%{transform:translate(-50%,-50%) scale(.3) rotate(-8deg);opacity:0}30%{opacity:1;transform:translate(-50%,-50%) scale(1.15) rotate(-8deg)}100%{transform:translate(-50%,-50%) scale(1) r[...]
-@media (prefers-reduced-motion:reduce){.fx{animation:none;opacity:1}}
-.cap{margin-top:14px;background:var(--sun);color:#1b1a2e;border:3px solid #1b1a2e;padding:8px 12px;max-width:70ch}
-.bubble{position:relative;margin-top:22px;background:#fff;color:#1b1a2e;border:3px solid #1b1a2e;border-radius:20px;padding:10px 16px;max-width:70ch}
-.bubble::after{content:"";position:absolute;top:-17px;left:34px;border:10px solid transparent;border-top:0;border-bottom:16px solid #1b1a2e}
-.bubble p{margin:2px 0 0}
-.msg{margin-top:10px;font-weight:700;color:var(--acc)}
-.chs{display:grid;gap:8px;margin-top:14px;max-width:70ch}
-.ch{text-align:left}
-.tag{font-style:normal;color:#fff;border-radius:5px;padding:1px 7px;margin-right:6px;font-size:14px}
-.chs small{opacity:.75}
-.bar{height:14px;border:3px solid var(--ink);background:var(--card);margin:6px 0;max-width:300px}
-.bar i{display:block;height:100%;background:var(--acc)}
-.wires{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-.wire{width:72px;height:96px;border:3px solid #1b1a2e;border-radius:8px;color:#fff;font:700 15px "Comic Neue",sans-serif;cursor:pointer;text-shadow:0 1px 2px #000}
-.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-.st{margin-top:16px;font-size:15px}
-.box{margin:30px auto;max-width:420px;text-align:center}
-.ov{position:fixed;inset:0;background:rgba(0,0,0,.55);display:grid;place-items:center;padding:12px;z-index:9}
-.ov:empty{display:none}
-.pn{background:var(--card);border:4px solid var(--ink);padding:14px;max-width:560px;width:100%;max-height:100%;overflow:auto}
-.im{border-top:2px dashed var(--ink);padding:8px 0}
-.im textarea{width:100%;font:14px/1.3 "Comic Neue",sans-serif;background:var(--bg);color:var(--ink);border:2px solid var(--ink);margin:4px 0}
-.arena{position:absolute;inset:0;overflow:hidden}
-.fgt{position:absolute;bottom:4%;left:0;right:0;margin:0 auto;width:min(240px,26vw)}
-.fgt .por{width:100%;opacity:1}
-.arena.hitH,.arena.hitB{animation:shk .5s .3s}
-.arena.hitH::after,.arena.hitB::after{content:"";position:absolute;inset:0;background:var(--acc);opacity:0;animation:fl .5s .3s;pointer-events:none}
-.arena.duck{animation:dip .6s .15s ease-out}
-.en.lunge{animation:lg .6s ease-in-out}.en.wind{animation:wnd .7s ease-in-out infinite}
-.fgt{transform-origin:50% 100%}
-.por::after{content:"";position:absolute;inset:0;background:#e4412f;opacity:0;pointer-events:none}
-.en.hitH .por::after{animation:redf .8s .3s}
-.warn{position:absolute;left:50%;top:8%;transform:translateX(-50%) rotate(-3deg);z-index:4;font:400 clamp(22px,5vw,38px) Bangers,Impact,sans-serif;letter-spacing:.04em;color:#fff;background:var(--acc)[...]
-.zone{position:absolute;left:0;right:0;z-index:2;height:34%;pointer-events:none}
-.zone.hi{top:0;background:linear-gradient(rgba(228,65,47,.6),transparent)}
-.zone.lo{bottom:0;background:linear-gradient(transparent,rgba(228,65,47,.6))}
-.guard{position:absolute;left:calc(50% - 45px);bottom:-6%;width:90px;z-index:3;transform-origin:50% 100%;animation:wipe .75s .15s both;filter:drop-shadow(3px 3px 0 #1b1a2e)}
-.fist{position:absolute;width:clamp(50px,10.5vw,88px);z-index:2;opacity:0;filter:drop-shadow(3px 3px 0 #1b1a2e)}
-.fist svg,.guard svg{display:block;width:100%;height:auto}
-svg.f *{stroke:#1b1a2e;stroke-width:3.5;stroke-linejoin:round}
-.sl{fill:#3a5a8c}.e-head .sl,.e-body .sl,.e-miss .sl{fill:#262626}
-.f-head{animation:jabH .75s ease-in-out forwards}.f-body{animation:jabB .75s ease-in-out forwards}
-.e-head,.e-body{animation:jabL .75s ease-in-out forwards}.e-miss{animation:jabM .75s ease-in-out forwards}
-.fist{left:50%}.e-head{--y:58%;--e:36%}.e-body{--y:34%;--e:4%}
-.hands{position:absolute;left:0;right:0;bottom:-3%;display:flex;justify-content:center;gap:30%;pointer-events:none;filter:drop-shadow(3px 3px 0 #1b1a2e)}
-.hands svg{display:block;width:clamp(48px,10vw,84px);height:auto}.hands svg:last-child{transform:scaleX(-1)}
-@keyframes jabH{0%{bottom:-14%;transform:translateX(-50%) scale(2.4);opacity:1}45%,62%{bottom:58%;transform:translateX(-50%) scale(1.2);opacity:1}100%{bottom:-14%;transform:translateX(-50%) scale([...]
-@keyframes jabB{0%{bottom:-14%;transform:translateX(-50%) scale(2.4);opacity:1}45%,62%{bottom:34%;transform:translateX(-50%) scale(1.3);opacity:1}100%{bottom:-14%;transform:translateX(-50%) scale([...]
-@keyframes shk{0%,100%{transform:none}15%{transform:translate(-16px,8px) rotate(-2deg)}35%{transform:translate(14px,-6px) rotate(2deg)}55%{transform:translate(-9px,4px)}75%{transform:translate(6px,-2p[...]
-@keyframes fl{0%{opacity:0}20%{opacity:.5}100%{opacity:0}}
-@keyframes dip{40%{transform:translateX(-46px) rotate(-3deg)}}
-@keyframes lg{40%{transform:scale(1.18) translateY(10px)}}
-@keyframes wipe{0%{transform:translateX(170%) rotate(38deg);opacity:0}15%{opacity:1}55%{transform:translateX(-8%) rotate(-12deg);opacity:1}82%{transform:translateX(-150%) rotate(-40deg);opacity:1}100%[...]
-@keyframes redf{0%{opacity:0}25%{opacity:.6}100%{opacity:0}}
-@keyframes wnd{50%{transform:scale(1.07) translateY(6px) rotate(-2deg)}}
-@keyframes blink{50%{opacity:.55}}
-@keyframes jabL{0%{bottom:var(--y);transform:translateX(-50%) scale(.5);opacity:1}50%{bottom:var(--e);transform:translateX(-50%) scale(1.9);opacity:1}70%{bottom:var(--e);transform:translateX(-50%) sca[...]
-@keyframes jabM{0%{bottom:46%;left:50%;transform:translateX(-50%) scale(.5);opacity:1}55%{bottom:30%;left:104%;transform:translateX(-50%) scale(2.2);opacity:1}100%{bottom:30%;left:110%;transform:trans[...]
-.en.hitH{animation:sE .65s .3s ease-out}.en.hitB{animation:bE .65s .3s ease-out}.en.side{animation:sd .6s .1s ease-out}
-
-@keyframes sE{18%{transform:translateY(-24px) scaleY(1.09) rotate(-4deg)}45%{transform:translateY(-6px) rotate(2deg)}100%{transform:none}}
-@keyframes bE{40%{transform:translateY(12px) scale(.9,.84) rotate(3deg)}}
-@keyframes sM{40%{transform:translateX(-38px) rotate(-16deg)}}
-@keyframes bM{40%{transform:translateX(-24px) scale(.92,.86) rotate(-5deg)}}
-@keyframes sd{40%{transform:translateX(34px) skewX(-12deg)}}
-@keyframes dk{40%{transform:translateY(26px) scaleY(.8)}}
-@keyframes bk{40%{transform:scale(1.08);filter:brightness(1.4)}}
-@media (prefers-reduced-motion:reduce){.fgt,.fist,.arena,.guard,.warn{animation:none!important}}
-.hud{position:absolute;left:0;right:0;top:0;z-index:5;display:flex;align-items:center;gap:8px;padding:6px 8px}
-.hb{flex:1;height:18px;border:3px solid #1b1a2e;background:#fffdf4;position:relative;display:flex}
-.hb i{display:block;height:100%;background:#2a9d5c;transition:width .25s}
-.hb.en{justify-content:flex-end}.hb.en i{background:#e4412f}
-.hb span{position:absolute;left:6px;top:-3px;font:400 15px Bangers,Impact,sans-serif;letter-spacing:.05em;color:#1b1a2e}
-.hb.en span{left:auto;right:6px}
-.pips{display:flex;gap:4px}.pip{width:15px;height:15px;border:3px solid #1b1a2e;border-radius:50%;background:#fffdf4}.pip.on{background:var(--sun)}
-.hero{position:absolute;inset:0;pointer-events:none;transition:transform .15s}.hero.pl{transform:translateX(-9%)}.hero.pr{transform:translateX(9%)}.hero.dk2{transform:translateY(14%)}
-.fgt.en{width:30.8%;left:0;right:10px;top:calc(32% - 100px);bottom:auto;transform-origin:50% 20%;display:grid}
-.eb,.eh{grid-area:1/1}.fgt img{display:block;width:100%}
-.eh img{clip-path:inset(0 0 76% 0)}.eb img{clip-path:inset(24% 0 0 0)}.eh{transform-origin:50% 24%}
-.eh.snap{animation:snap .6s .3s}.eh.snap img{animation:redh .8s .3s}.fgt.bump .eb{animation:bump .5s .3s}
-@keyframes snap{20%{transform:translateY(-14px) rotate(-6deg)}50%{transform:translateY(-4px) rotate(2deg)}}
-@keyframes redh{30%{filter:sepia(1) saturate(7) hue-rotate(-35deg)}}
-@keyframes bump{40%{transform:translateY(8px) scaleY(.94)}}
-.back{position:absolute;left:50%;bottom:-3%;width:62.9%;aspect-ratio:3/2;transform:translateX(-50%);z-index:1}.back svg,.back img{display:block;width:100%;height:100%;object-fit:contain;object-positio[...]
-.gl{position:absolute;bottom:-4%;width:clamp(81px,13.5vw,144px);z-index:0;transition:bottom .15s;--fl:1;transform:scaleX(var(--fl));filter:drop-shadow(3px 3px 0 #1b1a2e)}
-.gl svg{display:block;width:100%;height:auto}.gl.L{left:calc(39% + 25px - 4.5vw);--dx:calc(75% - 20px)}.gl.R{right:calc(39% + 25px - 4.5vw);--fl:-1;--dx:calc(-75% + 20px)}
-.ghi .gl{bottom:calc(33% - 95px)}.glo .gl{bottom:calc(14.5% - 95px)}
-.gl.pjH{animation:pjH .5s ease-out}.gl.pjB{animation:pjB .5s ease-out}
-@keyframes pjH{0%,100%{clip-path:inset(50% 0 0 0)}8%,92%{clip-path:inset(0)}50%{bottom:var(--pk,calc(57% - 40px));translate:var(--dx) 0;transform:scale(calc(var(--fl)*.65),.65)}}
-@keyframes pjB{0%,100%{clip-path:inset(50% 0 0 0)}8%,92%{clip-path:inset(0)}50%{bottom:calc(32% - 60px);translate:var(--dx) 0;transform:scale(calc(var(--fl)*.7),.7)}}
-.fist.eL{left:calc(38% + 50px)}.fist.eR{left:calc(62% - 50px)}
-.arena .warn{top:16%}
-.btn:disabled{opacity:.4;cursor:not-allowed}
-@media (prefers-reduced-motion:reduce){.gl,.eh,.eh img,.fgt{animation:none!important}}
-.gl img,.fist img{display:block;width:100%;height:auto}
-.eh{position:relative}
-.mk{position:absolute;inset:0;pointer-events:none}
-.mk i{position:absolute;display:none}
-.mk .eye{left:41%;top:7.5%;width:11%;height:4%;border-radius:50%;background:radial-gradient(#ff4a3d,#c9261c 60%,transparent 72%);opacity:.85;transform:rotate(-8deg)}
-.mk.e1 .eye{display:block}
-.mk .sw{width:5px;height:8px;background:#9fd8ff;border:1.5px solid #1b1a2e;border-radius:50% 50% 50% 50%/65% 65% 35% 35%}
-.mk .s1{left:46%;top:2.5%}.mk .s2{left:55%;top:4%}
-.mk.e2 .sw{display:block}
-.mk .pl{left:55%;top:9.5%;width:9%;height:3.4%;background:#f3d3a8;border:2px solid #1b1a2e;transform:rotate(-24deg)}
-.mk.e3 .pl{display:block}
-.fxh{position:absolute;left:50%;width:0;height:0;z-index:4;pointer-events:none}
-.fxh b{position:absolute;color:var(--sun);font-size:clamp(16px,3vw,28px);line-height:1;-webkit-text-stroke:1.5px #1b1a2e;animation:orb .9s .3s both}
-.fxh i{position:absolute;width:6px;height:9px;background:#9fd8ff;border:1.5px solid #1b1a2e;border-radius:50% 50% 50% 50%/65% 65% 35% 35%;animation:spr .8s .3s both}
-@keyframes orb{0%{opacity:0;transform:rotate(var(--a)) translateX(0) scale(.3)}30%{opacity:1}100%{opacity:0;transform:rotate(calc(var(--a) + 120deg)) translateX(40px) scale(1)}}
-@keyframes spr{0%{opacity:0;transform:translate(0,0)}20%{opacity:1}100%{opacity:0;transform:translate(var(--x),var(--y))}}
-.fgt.en.down{animation:down 1.7s ease-in-out forwards}
-.down .fxh b{animation:dz 1.1s linear infinite}
-@keyframes down{0%{transform:none}20%{transform:translateY(-5%) scale(.8) rotate(-8deg)}55%{transform:translateY(-1%) scale(.77) rotate(-10deg)}100%{transform:translateY(105%) scale(.55,.35) rota[...]}
-@keyframes dz{from{opacity:1;transform:rotate(var(--a)) translateX(36px)}to{opacity:1;transform:rotate(calc(var(--a) + 360deg)) translateX(36px)}}
-.fp{display:flex;justify-content:center;margin:6px 0;min-height:60px;align-items:center}.fp img{width:90px;height:auto}.fp .mr{transform:scaleX(-1)}
-.fist.eR>img,.fist.eR>svg{transform:scaleX(-1)}
-.burst{position:absolute;left:50%;width:clamp(80px,18vw,150px);z-index:4;pointer-events:none;animation:bst .7s .3s both}.burst svg{display:block;width:100%;height:auto;filter:drop-shadow(3px 3px 0 #1b[...]
-@keyframes bst{0%{opacity:0;transform:translateX(-50%) scale(.2) rotate(-20deg)}30%{opacity:1;transform:translateX(-50%) scale(1.15) rotate(6deg)}75%{opacity:1;transform:translateX(-50%) scale(1) rota[...]}
-@media (prefers-reduced-motion:reduce){.burst{animation:none}}
-.mk .rd{left:54%;top:9%;width:10%;height:4%;border-radius:50%;background:radial-gradient(#ff4a3d,#c9261c 60%,transparent 72%);opacity:.8}.mk.e3 .rd{display:block}
-.eb{position:relative}.ck{position:absolute;inset:0;pointer-events:none}.ck i{position:absolute;display:none;width:11%;aspect-ratio:2/3}.ck svg{width:100%;height:100%;display:block}
-.ck .a{left:36%;top:30%;transform:rotate(-12deg)}.ck .b{left:53%;top:38%;transform:rotate(14deg) scaleX(-1)}.ck .c{left:43%;top:48%;transform:rotate(-4deg)}
-.ck.k1 .a,.ck.k2 .b,.ck.k3 .c{display:block}
-.hero.kod{animation:hdown 1.4s ease-in forwards}.kod .fxh b{animation:dz 1.1s linear infinite}
-@keyframes hdown{0%{transform:none}25%{transform:translateY(8%) rotate(-2deg)}100%{transform:translateY(120%) rotate(6deg)}}
-.arena.kos{animation:shk .6s}
-.rs{position:absolute;left:8px;right:8px;top:34px;z-index:5;display:flex;align-items:center;gap:8px;font:400 15px Bangers,Impact,sans-serif;letter-spacing:.05em;color:#1b1a2e}
-.rs b{font-weight:400;background:var(--sun);border:3px solid #1b1a2e;padding:0 8px}
-.rb{flex:1;height:12px;border:3px solid #1b1a2e;background:#fffdf4}.rb i{display:block;height:100%;background:#e4412f;transition:width .9s linear}
-.rs span{background:#fffdf4;border:3px solid #1b1a2e;padding:0 8px;min-width:56px;text-align:center}
-.thr{position:absolute;width:clamp(30px,5vw,48px);z-index:3;opacity:0;filter:drop-shadow(2px 2px 0 #1b1a2e);pointer-events:none}
-.thr svg,.thr img{display:block;width:100%;height:auto}
-.thr.tH{animation:thH .95s ease-in both}.thr.tM{animation:thM .8s ease-in both}
-@keyframes thH{0%{left:58%;bottom:14%;opacity:1;transform:perspective(240px) rotateX(0) scale(1)}38%{left:50%;bottom:var(--tk,52%);opacity:1;transform:perspective(240px) rotateX(-720deg) scale(.6[...]
-@keyframes thM{0%{left:58%;bottom:14%;opacity:1;transform:perspective(240px) rotateX(0) scale(1)}55%{left:78%;bottom:var(--tk,52%);opacity:1;transform:perspective(240px) rotateX(-720deg) scale(.5[...]
-@media (prefers-reduced-motion:reduce){.thr{animation:none!important}}
-.gl{clip-path:inset(50% 0 0 0)}
-@media (prefers-reduced-motion:reduce){.gl{clip-path:none}}
-.pn details{margin-top:10px;border-top:2px dashed var(--ink);padding-top:6px}.pn summary{cursor:pointer}
-/* accessible sr-only for screen readers */
-.sr-only{position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap;border:0;padding:0;margin:-1px}
-</style></head>
-<body><div class="wrap"><main id="app" role="main" tabindex="-1" aria-live="polite"></main></div><div id="sr-msg" class="sr-only" aria-live="polite" aria-atomic="true"></div><div class="ov" id="ov" role="dialog" aria-modal="true" aria-hidden="true"></div>
-<script>
-const ST="Bildstil: franko-belgischer Thriller-Comic, kräftige schwarze Konturen, flächige Farben, Cel-Shading, kein Text im Bild. ";
-const BD="Frontale Ganzkörperansicht, die Person steht aufrecht zur Kamera, Kopf im obersten Fünftel des Bildes, Fäuste in Boxerhaltung vor dem Körper, dieselbe Figur und Kleidung wie im Port[...]
-const P={title:"XIII · Kapitel 1: Der Strand",start:"strand",stats:{Stärke:3,Charme:2,Geschick:3},
-images:{
-bg_strand:{ar:"16:9",p:ST+"Einsamer Strand bei Morgendämmerung, Treibgut und Algen im Vordergrund, Wellen links, kleine Holzhütte rechts im Hintergrund, leichter Nebel."},
-bg_huette:{ar:"16:9",p:ST+"Innenraum einer Rettungshütte am Strand: Verbandskasten an der Wand links, Kabelkasten daneben, ein Fenster rechts mit Blick auf einen Parkplatz, Hintertür ganz recht[...]
-bg_parkplatz:{ar:"16:9",p:ST+"Kiesparkplatz hinter einer Strandhütte, ein altes Lieferfahrzeug mit offener Fahrertür in der Mitte, Zaun und Dünen im Hintergrund, Dämmerlicht."},
-char_held:{ar:"3:4",p:ST+"Halbfigur-Porträt, Mann Mitte dreißig, kurze dunkle Haare, markantes Kinn, verwirrter Blick, nasses zerrissenes Hemd, auf der Brust ein Brandzeichen mit der römischen[...]
-char_retterin:{ar:"3:4",p:ST+"Halbfigur-Porträt, junge Rettungsschwimmerin, kurze braune Haare, rotes Shirt, sonnengebräunt, besorgt und freundlich, einfarbiger Hintergrund."},
-char_fremder:{ar:"3:4",p:ST+"Halbfigur-Porträt, Mann im schwarzen Anzug mit Sonnenbrille, harte Miene, schmale Lippen, einfarbiger Hintergrund."},
-body_held:{ar:"2:3",p:ST+BD+"Mann Mitte dreißig, kurze dunkle Haare, markantes Kinn, zerrissenes nasses Hemd, Brandzeichen XIII auf der Brust."},
-body_retterin:{ar:"2:3",p:ST+BD+"Junge Rettungsschwimmerin, kurze braune Haare, rotes Shirt, kurze Hose."},
-body_fremder:{ar:"2:3",p:ST+BD+"Mann im schwarzen Anzug mit Sonnenbrille, harte Miene."},
-back_held:{ar:"3:2",p:ST+"Ansicht von hinten: Kopf und Oberkörper eines Mannes Mitte dreißig mit kurzen dunklen Haaren und zerrissenem nassen Hemd, breite Schultern, reiner weißer Hintergrund [...]
-fist_hero:{ar:"1:1",p:ST+"Eine geballte Boxerfaust im Handschuh, aus Sicht des Boxers gesehen (Handrücken und Knöchel nach vorn), linke Hand, mit Unterarm und Ärmel, die unten aus dem Bild laufen, [...]
-fist_enemy:{ar:"1:1",p:ST+"Eine geballte Faust im schwarzen Ärmel, frontal auf die Kamera zufliegend (Knöchel groß im Vordergrund), reiner weißer Hintergrund ohne Schatten."}},
-chars:{held:{n:"Du",i:"char_held"},retterin:{n:"Retterin",i:"char_retterin"},fremder:{n:"Fremder",i:"char_fremder"}},
-scenes:{
-strand:{bg:"bg_strand",chars:["held"],txt:"Du kommst zu dir. Sand im Mund, Salz auf den Lippen, ein Pochen im Kopf. Du weißt nicht, wer du bist. Nur eine Frau steht am Wasser und starrt dich an.[...]
-{l:"Frau am Wasser",x:24,y:58,t:"talk",to:"n1",not:"met"},
-{l:"Frau am Wasser",x:24,y:58,t:"talk",to:"n0",if:"met"},
-{l:"Brust",x:46,y:70,t:"look",once:"tattoo",msg:"Auf deiner Brust brennt eine römische Zahl: XIII. Frisch genug, um zu schmerzen."},
-{l:"Hosentasche",x:64,y:76,t:"look",once:"key",give:"Schließfachschlüssel",msg:"In der Hosentasche steckt ein Schlüssel mit eingeprägter Nummer. Du behältst ihn."},
-{l:"Treibgut",x:56,y:80,t:"look",once:"fl",give:"Flasche",msg:"Zwischen den Algen liegt eine leere Glasflasche. Die könnte noch nützlich sein."},
-{l:"Rettungshütte",x:80,y:46,t:"go",to:"huette"}]},
-huette:{bg:"bg_huette",chars:["held"],txt:"In der Hütte riecht es nach Salz, Öl und Pflaster. Draußen schreien Möwen. Alles wirkt friedlich, und trotzdem ist dir mulmig.",spots:[
-{l:"Verbandskasten",x:20,y:48,t:"look",once:"aid",hp:3,msg:"Du presst dir einen Verband an den Kopf. Das Pochen lässt nach: +3 LP."},
-{l:"Fenster",x:62,y:30,t:"look",once:"alarm",if:"met",msg:"Auf dem Parkplatz hält ein schwarzer Wagen. Zwei Männer steigen aus, einer trägt etwas Langes unter dem Mantel."},
-{l:"Retterin",x:42,y:64,t:"talk",to:"h1",if:"alarm",not:"shot"},
-{l:"Retterin",x:42,y:64,t:"talk",to:"h_ok",if:"saved"},
-{l:"Hintertür",x:82,y:52,t:"go",to:"parkplatz",if:"cleared"},
-{l:"Zum Strand",x:50,y:88,t:"go",to:"strand"}]},
-parkplatz:{bg:"bg_parkplatz",chars:["held"],txt:"Hinter der Hütte steht ein altes Lieferfahrzeug. Ein Schlüssel steckt natürlich nicht. Vom Strand her rufen Männer.",spots:[
-{l:"Lieferwagen",x:50,y:56,t:"wires",to:"w1",not:"truck"},
-{l:"Losfahren",x:50,y:56,t:"go",to:"ende",if:"truck"},
-{l:"Zurück in die Hütte",x:14,y:82,t:"go",to:"huette"}]},
-ende:{bg:"bg_parkplatz",chars:["held"],txt:"Du gibst Gas. Die Küste schrumpft im Rückspiegel, die Zahl brennt auf deiner Brust, und eine Frage hämmert im Kopf: Wer bist du? Kapitel 1 ist geschafft.[...]
-{l:"Rückspiegel",x:50,y:26,t:"look",if:"saved",msg:"Im Rückspiegel winkt dir die Rettungsschwimmerin nach, bis die Hütte hinter den Dünen verschwindet."},
-{l:"Rückspiegel",x:50,y:26,t:"look",not:"saved",msg:"Im Rückspiegel wird die Hütte kleiner. Du hast es nicht rechtzeitig geschafft, und das wirst du nicht vergessen."},
-{l:"Weiter",x:50,y:50,t:"look",msg:"Kapitel 2 ist noch nicht gebaut. Sag Bescheid, wenn es weitergehen soll!"}]}},
-nodes:{
-n1:{who:"retterin",set:"met",say:"Er lebt! Bleib liegen, du blutest am Kopf. Weißt du, wie du heißt?",ch:[
-{tag:"Reden",t:"Nein. In meinem Kopf ist nichts.",ok:"n2"},
-{tag:"Flirten",t:"Wenn mich jemand so pflegt, bleibe ich gern liegen.",chk:["Charme",6],ok:"n3",fail:"n4"},
-{tag:"Bestechen",t:"30 Dollar, wenn du keine Fragen stellst.",cost:30,ok:"n5"},
-{tag:"Drohen",t:"Kein Wort zu irgendwem, verstanden?",chk:["Stärke",6],ok:"n6",fail:"n7"}]},
-n2:{who:"retterin",say:"Eine römische XIII auf der Brust und ein Loch im Kopf... Komm in die Hütte, ich verbinde dich.",ch:[{tag:"Weiter",t:"Danke. Ich komme mit.",ok:"end"}]},
-n3:{who:"retterin",say:"Ein Charmeur mit Gedächtnisverlust, das fehlte noch. Na komm, in der Hütte gibt es einen Verband.",ch:[{tag:"Weiter",t:"Ich bin schon unterwegs.",ok:"end"}]},
-n4:{who:"retterin",say:"Netter Versuch. Du brauchst einen Arzt, keine Komplimente. In die Hütte, los.",ch:[{tag:"Weiter",t:"Auch gut.",ok:"end"}]},
-n5:{who:"retterin",say:"Ich stelle keine Fragen. Aber das Geld verdiene ich mir: In der Hütte liegt ein Verbandskasten.",ch:[{tag:"Weiter",t:"Geht in Ordnung.",ok:"end"}]},
-n6:{who:"retterin",say:"Schon gut, schon gut! Ich sage nichts. Geh bitte einfach in die Hütte.",ch:[{tag:"Weiter",t:"Geht doch.",ok:"end"}]},
-n7:{who:"retterin",say:"Lass das! Ich will dir doch nur helfen. In die Hütte, sofort!",ch:[{tag:"Weiter",t:"Na gut.",ok:"end"}]},
-n0:{who:"retterin",say:"Beeil dich mit dem Verband. Ich habe ein ungutes Gefühl.",ch:[{tag:"Weiter",t:"Ich sehe nach.",ok:"end"}]},
-h1:{who:"retterin",say:"Draußen steht ein schwarzer Wagen. Die Männer sehen nicht aus wie Badegäste. Kennst du die? Ich rufe die Polizei!",ch:[
-{tag:"Reden",t:"Nicht! Die sind meinetwegen hier. Versteck dich.",ok:"h2"},
-{tag:"Drohen",t:"Leg das Telefon weg. Sofort.",chk:["Stärke",5],ok:"h3",fail:"h2"},
-{tag:"Flirten",t:"Keine Polizei. Vertrau mir, nur dieses eine Mal.",chk:["Charme",6],ok:"h3",fail:"h2"}]},
-h2:{who:"retterin",set:"shot",say:"Dann hinter das Regal, schnell! Moment, da kommt jemand!",ch:[{tag:"Weiter",t:"Die Tür fliegt auf...",ok:"fight:f1"}]},
-h3:{who:"retterin",set:"shot",say:"Na gut, kein Anruf. Aber versteck dich, schnell!",ch:[{tag:"Weiter",t:"Zu spät, die Tür kracht auf...",ok:"fight:f1"}]},
-f1_win:{who:"held",set:"cleared",say:"Der Mann sackt zusammen. Für die Frau kam jede Hilfe zu spät. Ich muss weg von hier, durch die Hintertür.",ch:[{tag:"Weiter",t:"Zur Hintertür.",ok:"end"} [...]
-// rest of original script unchanged (kept intact)
-
-const TC={Reden:"#2a6fdb",Flirten:"#d63384",Bestechen:"#2a9d5c",Drohen:"#c0392b",Weiter:"#555"};
-const $=s=>document.querySelector(s),E=s=>String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
-const d6=()=>1+Math.floor(Math.random()*6),fresh=()=>({scene:P.start,hp:10,money:60,inv:[],floor:[],flags:{},mode:"scene",node:null,msg:"",fx:"",f:null,w:null});
-let S,urls={},db=null,tm=null,showImg=false,sv={};
-// bootstrapped as originally — the rest of the script remains unchanged to preserve functionality
-
-(async()=>{await loadImgs();for(const k in DEF)if(!urls[k]){urls[k]=d2u(DEF[k]);BI[k]=1}S=fresh();render()})();
-</script>
-
-<!-- Enhancements script: accessibility, button defaults, and cleanup behaviors -->
-<script>
-(function(){
-  'use strict';
-  // Ensure existing buttons have explicit type="button" and observe future additions
-  function setButtonTypes(root=document){
-    root.querySelectorAll('button').forEach(b=>{ if(!b.hasAttribute('type')) b.setAttribute('type','button'); });
-  }
-  setButtonTypes(document);
-  const mo=new MutationObserver(muts=>{
-    for(const m of muts) for(const n of m.addedNodes){
-      if(n.nodeType!==1) continue;
-      if(n.tagName==='BUTTON' && !n.hasAttribute('type')) n.setAttribute('type','button');
-      try{ n.querySelectorAll && n.querySelectorAll('button').forEach(b=>{ if(!b.hasAttribute('type')) b.setAttribute('type','button'); }); }catch(e){}
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Comic-Plot-Engine · Test mit XIII</title>
+  <style>
+    :root {
+      --bg: #cfe8ef;
+      --ink: #1b1a2e;
+      --card: #fffdf4;
+      --acc: #e4412f;
+      --sun: #ffd23f;
+      --sea: #1f6f78;
     }
-  });
-  mo.observe(document.documentElement,{childList:true,subtree:true});
 
-  // Mirror visible .msg content into sr-only region for screen readers
-  const sr=document.getElementById('sr-msg');
-  if(sr){
-    const updateSr=()=>{ const el=document.querySelector('.msg')||document.getElementById('msg'); sr.textContent = el ? el.textContent : ''; };
-    const msgObs=new MutationObserver(updateSr);
-    msgObs.observe(document.body,{childList:true,subtree:true,characterData:true});
-    // initial
-    setTimeout(updateSr,300);
-  }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font: 400 17px/1.45 "Comic Neue", "Trebuchet MS", sans-serif;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+    }
+    .wrap {
+      width: min(920px, calc(100vw - 20px));
+      padding: 10px 0 18px;
+    }
+    .app {
+      background: transparent;
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    h1, h2, .spot, .fx {
+      font-family: Bangers, Impact, sans-serif;
+      letter-spacing: 0.04em;
+      font-weight: 400;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(28px, 4vw, 40px);
+    }
+    .btn {
+      font: 700 15px/1.2 "Comic Neue", sans-serif;
+      color: var(--ink);
+      background: var(--card);
+      border: 3px solid var(--ink);
+      border-radius: 8px;
+      box-shadow: 3px 3px 0 var(--ink);
+      padding: 9px 12px;
+      cursor: pointer;
+    }
+    .btn:hover { background: var(--sun); }
+    .btn:focus-visible, .spot:focus-visible { outline: 3px solid var(--acc); outline-offset: 2px; }
+    .stage {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      background: linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.1)), var(--sea);
+      border: 4px solid var(--ink);
+      box-shadow: 6px 6px 0 var(--ink);
+      overflow: hidden;
+      background-size: cover;
+      background-position: center;
+    }
+    .stage::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,.08);
+      pointer-events: none;
+    }
+    .spot {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      background: var(--sun);
+      color: var(--ink);
+      border: 3px solid var(--ink);
+      border-radius: 8px;
+      padding: 4px 10px;
+      cursor: pointer;
+      box-shadow: 3px 3px 0 var(--ink);
+      font-size: clamp(15px, 2vw, 20px);
+      z-index: 2;
+    }
+    .spot:hover { background: var(--acc); color: white; }
+    .chars {
+      position: absolute;
+      left: 10px;
+      bottom: 10px;
+      display: flex;
+      gap: 8px;
+      z-index: 2;
+    }
+    .portrait {
+      width: 84px;
+      aspect-ratio: 3 / 4;
+      border: 3px solid var(--ink);
+      background: var(--card);
+      position: relative;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+    }
+    .portrait.active {
+      outline: 4px solid var(--sun);
+      transform: translateY(-6px);
+    }
+    .portrait b {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      background: rgba(27,26,46,.92);
+      color: white;
+      font-size: 11px;
+      text-align: center;
+      padding: 2px 4px;
+      line-height: 1.2;
+      font-family: Bangers, Impact, sans-serif;
+      letter-spacing: 0.04em;
+    }
+    .portrait .letter {
+      font-family: Bangers, Impact, sans-serif;
+      font-size: 34px;
+      color: var(--ink);
+    }
+    .fx {
+      position: absolute;
+      left: 50%;
+      top: 38%;
+      transform: translate(-50%, -50%) rotate(-8deg);
+      color: var(--sun);
+      font-size: clamp(42px, 12vw, 90px);
+      -webkit-text-stroke: 3px var(--ink);
+      text-shadow: 5px 5px 0 var(--acc);
+      z-index: 3;
+      pointer-events: none;
+      animation: pop .9s ease both;
+    }
+    @keyframes pop {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(.3) rotate(-8deg); }
+      30% { opacity: 1; transform: translate(-50%, -50%) scale(1.15) rotate(-8deg); }
+      100% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(-8deg); }
+    }
+    .caption, .bubble, .message {
+      margin-top: 14px;
+      max-width: 70ch;
+    }
+    .caption {
+      background: var(--sun);
+      border: 3px solid var(--ink);
+      padding: 8px 12px;
+      font-weight: 700;
+    }
+    .bubble {
+      position: relative;
+      background: white;
+      border: 3px solid var(--ink);
+      border-radius: 20px;
+      padding: 10px 16px;
+      max-width: 70ch;
+    }
+    .bubble::after {
+      content: "";
+      position: absolute;
+      top: -16px;
+      left: 32px;
+      border: 10px solid transparent;
+      border-top: 0;
+      border-bottom: 16px solid var(--ink);
+    }
+    .bubble strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+    .message {
+      color: var(--acc);
+      font-weight: 700;
+      min-height: 28px;
+    }
+    .choices {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+      max-width: 70ch;
+    }
+    .choice {
+      text-align: left;
+    }
+    .tag {
+      display: inline-block;
+      color: white;
+      background: #555;
+      border-radius: 5px;
+      padding: 4px 8px;
+      margin-right: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      vertical-align: middle;
+    }
+    .stats {
+      margin-top: 12px;
+      font-size: 15px;
+      line-height: 1.5;
+      padding-top: 10px;
+      border-top: 2px dashed var(--ink);
+    }
+    .inventory {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .chip {
+      background: var(--card);
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      padding: 4px 8px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div id="app" class="app" aria-live="polite"></div>
+  </div>
 
-  // Overlay focus & escape handling: set aria-hidden based on content and allow closing with ESC or clicking backdrop
-  const ov=document.getElementById('ov');
-  if(ov){
-    const ovObs=new MutationObserver(()=>{ if(ov.innerHTML.trim()) { ov.setAttribute('aria-hidden','false'); const focusable=ov.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'); if(focusable) focusable.focus(); } else ov.setAttribute('aria-hidden','true'); });
-    ovObs.observe(ov,{childList:true,subtree:true});
-    document.addEventListener('keydown', e=>{ if(e.key==='Escape' && ov.getAttribute('aria-hidden')==='false'){ ov.innerHTML=''; ov.setAttribute('aria-hidden','true'); } });
-    ov.addEventListener('click', e=>{ if(e.target===ov){ ov.innerHTML=''; ov.setAttribute('aria-hidden','true'); } });
-  }
+  <script>
+    const STORY = {
+      title: 'XIII · Kapitel 1: Der Strand',
+      start: 'strand',
+      scenes: {
+        strand: {
+          bg: 'linear-gradient(180deg, rgba(13,22,40,.18), rgba(10,24,31,.25)), url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1400&q=80")',
+          text: 'Du kommst zu dir. Sand im Mund, Salz auf den Lippen, ein Pochen im Kopf. Du weißt nicht, wer du bist. Nur eine Frau steht am Wasser und starrt dich an.',
+          chars: ['held'],
+          spots: [
+            { label: 'Frau am Wasser', x: 24, y: 62, action: 'talk', node: 'n1' },
+            { label: 'Brust', x: 48, y: 72, action: 'look', flag: 'tattoo', message: 'Auf deiner Brust brennt eine römische Zahl: XIII. Frisch genug, um zu schmerzen.' },
+            { label: 'Hosentasche', x: 64, y: 78, action: 'look', flag: 'key', item: 'Schlüssel', message: 'In der Hosentasche steckt ein Schlüsssel mit Nummer. Du behältst ihn.' },
+            { label: 'Treibgut', x: 58, y: 82, action: 'look', flag: 'flask', item: 'Flasche', message: 'Zwischen den Algen liegt eine leere Glasflasche. Die könnte noch nützlich sein.' },
+            { label: 'Rettungshütte', x: 80, y: 46, action: 'goto', target: 'huette' }
+          ]
+        },
+        huette: {
+          bg: 'linear-gradient(180deg, rgba(15,18,26,.16), rgba(15,18,26,.28)), url("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=80")',
+          text: 'In der Hütte riecht es nach Salz, Öl und Pflaster. Draußen schreien Möwen. Alles wirkt friedlich, und trotzdem ist dir mulmig.',
+          chars: ['held'],
+          spots: [
+            { label: 'Verbandskasten', x: 22, y: 48, action: 'look', flag: 'aid', message: 'Du presst dir einen Verband an den Kopf. Das Pochen lässt nach: +3 LP.', heal: 3 },
+            { label: 'Fenster', x: 62, y: 30, action: 'look', flag: 'alarm', message: 'Auf dem Parkplatz hält ein schwarzer Wagen. Zwei Männer steigen aus, einer trägt etwas Langes unter dem Mantel.' },
+            { label: 'Retterin', x: 42, y: 64, action: 'talk', node: 'h1' },
+            { label: 'Vom Strand', x: 54, y: 88, action: 'goto', target: 'strand' }
+          ]
+        }
+      },
+      chars: {
+        held: { name: 'Du', initial: 'D' },
+        retterin: { name: 'Retterin', initial: 'R' }
+      },
+      nodes: {
+        n1: {
+          speaker: 'retterin',
+          text: 'Er lebt! Bleib liegen, du blutest am Kopf. Weißt du, wie du heißt?',
+          choices: [
+            { tag: 'Reden', text: 'Nein. In meinem Kopf ist nichts.', next: 'n2' },
+            { tag: 'Flirten', text: 'Wenn mich jemand so pflegt, bleibe ich gern liegen.', next: 'n3', stat: 'Charme', req: 6 },
+            { tag: 'Drohen', text: 'Kein Wort zu irgendwem, verstanden?', next: 'n4', stat: 'Stärke', req: 5 }
+          ]
+        },
+        n2: {
+          speaker: 'retterin',
+          text: 'Eine römische XIII auf der Brust und ein Loch im Kopf... Komm in die Hütte, ich verbinde dich.',
+          choices: [{ tag: 'Weiter', text: 'Danke. Ich komme mit.', next: 'end' }]
+        },
+        n3: {
+          speaker: 'retterin',
+          text: 'Ein Charmeur mit Gedächtnisverlust, das fehlte noch. Na komm, in die Hütte gibt es einen Verband.',
+          choices: [{ tag: 'Weiter', text: 'Ich bin schon unterwegs.', next: 'end' }]
+        },
+        n4: {
+          speaker: 'retterin',
+          text: 'Lass das! Ich will dir doch nur helfen. In die Hütte, sofort!',
+          choices: [{ tag: 'Weiter', text: 'Na gut.', next: 'end' }]
+        },
+        h1: {
+          speaker: 'retterin',
+          text: 'Draußen steht ein schwarzer Wagen. Die Männer sehen nicht aus wie Badegäste. Kennst du die? Ich rufe die Polizei!',
+          choices: [
+            { tag: 'Reden', text: 'Nicht! Die sind meinetwegen hier. Versteck dich.', next: 'end' },
+            { tag: 'Drohen', text: 'Leg das Telefon weg. Sofort.', next: 'end', stat: 'Stärke', req: 5 }
+          ]
+        }
+      }
+    };
 
-  // Revoke created blob: URLs on unload to avoid leaking memory
-  window.addEventListener('beforeunload', ()=>{
-    try{ if(window.urls) Object.values(window.urls).forEach(u=>{ if(u && typeof u === 'string' && u.startsWith('blob:')) URL.revokeObjectURL(u); }); }catch(e){}
-  });
+    const state = {
+      scene: STORY.start,
+      hp: 10,
+      money: 60,
+      inventory: [],
+      flags: {},
+      message: 'Du bist wach. Was tust du?',
+      node: null,
+      mode: 'scene'
+    };
 
-  // Prevent global key handlers from triggering when typing in form controls
-  document.addEventListener('keydown', e=>{ const active=document.activeElement; if(active && /INPUT|TEXTAREA|SELECT/.test(active.tagName)) return; }, true);
-})();
-</script>
-</body></html>
+    function render() {
+      const app = document.getElementById('app');
+      const scene = STORY.scenes[state.scene];
+      if (!scene) return;
+
+      const chars = scene.chars || [];
+      const portraits = chars.map((id) => {
+        const person = STORY.chars[id];
+        return `
+          <div class="portrait ${state.node && STORY.nodes[state.node].speaker === id ? 'active' : ''}">
+            <span class="letter">${person.initial}</span>
+            <b>${person.name}</b>
+          </div>
+        `;
+      }).join('');
+
+      const spots = (scene.spots || []).filter((spot) => {
+        if (spot.flag && state.flags[spot.flag]) return false;
+        return true;
+      }).map((spot, index) => `
+        <button type="button" class="spot" style="left:${spot.x}%; top:${spot.y}%" data-action="spot" data-index="${index}">${spot.label}</button>
+      `).join('');
+
+      const inventory = state.inventory.length
+        ? `<div class="inventory">${state.inventory.map(item => `<span class="chip">${item}</span>`).join('')}</div>`
+        : `<div class="inventory"><span class="chip">leer</span></div>`;
+
+      let dialog = '';
+      if (state.mode === 'dialog' && state.node) {
+        const node = STORY.nodes[state.node];
+        const speaker = STORY.chars[node.speaker] || { name: 'Narrator' };
+        dialog = `
+          <div class="bubble">
+            <strong>${speaker.name}</strong>
+            <div>${node.text}</div>
+          </div>
+          <div class="choices">
+            ${node.choices.map((choice, idx) => `
+              <button type="button" class="btn choice" data-action="choice" data-index="${idx}">
+                <span class="tag" style="background:${colorFor(choice.tag)}">${choice.tag}</span>${choice.text}
+              </button>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      app.innerHTML = `
+        <div class="topbar">
+          <h1>${STORY.title}</h1>
+          <div>
+            <button type="button" class="btn" data-action="restart">Neustart</button>
+          </div>
+        </div>
+
+        <div class="stage" style="background-image:${scene.bg}">
+          ${spots}
+          <div class="chars">${portraits}</div>
+          ${state.fx ? `<div class="fx">${state.fx}</div>` : ''}
+        </div>
+
+        <div class="caption">${scene.text}</div>
+
+        ${dialog}
+
+        <div class="message">${state.message || ''}</div>
+        <div class="stats">
+          LP: ${Math.max(0, state.hp)}/10 &nbsp;•&nbsp; Geld: ${state.money} $ &nbsp;•&nbsp; Inventar:
+          ${inventory}
+        </div>
+      `;
+    }
+
+    function colorFor(tag) {
+      const map = {
+        Reden: '#2a6fdb',
+        Flirten: '#d63384',
+        Drohen: '#c0392b',
+        Bestechen: '#2a9d5c',
+        Weiter: '#555',
+        '': '#666'
+      };
+      return map[tag] || '#666';
+    }
+
+    function giveItem(item) {
+      if (!item) return;
+      if (!state.inventory.includes(item)) state.inventory.push(item);
+    }
+
+    function applyChoice(index) {
+      if (!state.node) return;
+      const node = STORY.nodes[state.node];
+      const choice = node.choices[index];
+      if (!choice) return;
+
+      const needsStat = choice.stat;
+      if (needsStat) {
+        const statValue = { Stärke: 3, Charme: 2, Geschick: 3 }[needsStat] || 0;
+        const roll = 1 + Math.floor(Math.random() * 6);
+        const passed = roll + statValue >= (choice.req || 0);
+        state.message = `${needsStat}-Probe: ${roll} + ${statValue} ${passed ? '≥' : '<'} ${choice.req}. ${passed ? 'Erfolgreich.' : 'Misslungen.'}`;
+        if (!passed && choice.next) {
+          state.node = choice.next;
+          state.mode = 'dialog';
+          render();
+          return;
+        }
+      }
+
+      if (choice.next === 'end') {
+        state.mode = 'scene';
+        state.node = null;
+        state.message = 'Die Situation wird klarer. Du gehst weiter.';
+      } else {
+        state.node = choice.next;
+        state.mode = 'dialog';
+      }
+
+      render();
+    }
+
+    function doSpot(index) {
+      const scene = STORY.scenes[state.scene];
+      const spot = (scene.spots || [])[index];
+      if (!spot) return;
+
+      if (spot.action === 'goto') {
+        state.scene = spot.target;
+        state.message = `Du gehst nach ${spot.target}.`;
+        state.mode = 'scene';
+        state.node = null;
+        render();
+        return;
+      }
+
+      if (spot.action === 'talk') {
+        state.mode = 'dialog';
+        state.node = spot.node;
+        state.message = '';
+        render();
+        return;
+      }
+
+      if (spot.flag) state.flags[spot.flag] = true;
+      if (spot.item) giveItem(spot.item);
+      if (spot.heal) state.hp = Math.min(10, state.hp + spot.heal);
+      state.message = spot.message || 'Du schaust genauer hin.';
+      render();
+    }
+
+    document.addEventListener('click', (event) => {
+      const target = event.target.closest('[data-action]');
+      if (!target) return;
+
+      const action = target.dataset.action;
+      const index = Number(target.dataset.index || -1);
+
+      if (action === 'spot') doSpot(index);
+      if (action === 'choice') applyChoice(index);
+      if (action === 'restart') {
+        state.scene = STORY.start;
+        state.hp = 10;
+        state.money = 60;
+        state.inventory = [];
+        state.flags = {};
+        state.message = 'Du bist wach. Was tust du?';
+        state.node = null;
+        state.mode = 'scene';
+        render();
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>
